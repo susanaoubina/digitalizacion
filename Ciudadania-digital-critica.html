@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ciudadanía Digital Crítica · Digitalización 4º ESO</title>
+<style>
+  :root{
+    --azul:#1e3a8a; --azul2:#2563eb; --cielo:#38bdf8; --menta:#10b981;
+    --coral:#f43f5e; --ambar:#f59e0b; --morado:#7c3aed;
+    --tinta:#0f172a; --gris:#475569; --nube:#f1f5f9; --papel:#ffffff;
+    --sombra:0 10px 30px rgba(15,23,42,.12);
+    --radio:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    color:var(--tinta); line-height:1.65;
+    background:linear-gradient(180deg,#eef2ff 0%,#f8fafc 30%,#f8fafc 100%);
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+
+  /* HERO */
+  header.hero{
+    background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 45%,#7c3aed 100%);
+    color:#fff;padding:70px 20px 90px;text-align:center;position:relative;overflow:hidden;
+  }
+  header.hero::after{
+    content:"";position:absolute;bottom:-1px;left:0;right:0;height:60px;
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60'%3E%3Cpath fill='%23f8fafc' d='M0,30 C300,70 900,-10 1200,30 L1200,60 L0,60 Z'/%3E%3C/svg%3E") no-repeat center/cover;
+  }
+  .hero .tag{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);
+    padding:6px 16px;border-radius:999px;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;margin-bottom:18px}
+  .hero h1{font-size:2.6rem;line-height:1.15;margin-bottom:14px;font-weight:800}
+  .hero p{max-width:620px;margin:0 auto;font-size:1.12rem;opacity:.95}
+  .hero .emoji{font-size:3rem;display:block;margin-bottom:10px}
+
+  /* NAV índice */
+  nav.indice{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);
+    backdrop-filter:blur(8px);border-bottom:1px solid #e2e8f0;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+  nav.indice ul{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;list-style:none;padding:10px}
+  nav.indice a{text-decoration:none;color:var(--azul);font-weight:600;font-size:.9rem;
+    padding:7px 14px;border-radius:999px;transition:.2s}
+  nav.indice a:hover{background:var(--azul);color:#fff}
+
+  section{padding:48px 0}
+  .card{background:var(--papel);border-radius:var(--radio);box-shadow:var(--sombra);padding:32px;margin-bottom:26px}
+
+  h2.titulo{font-size:1.9rem;display:flex;align-items:center;gap:12px;margin-bottom:6px;color:var(--azul)}
+  h2.titulo .num{background:linear-gradient(135deg,var(--azul2),var(--morado));color:#fff;
+    width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:1.2rem;flex:none}
+  .subt{color:var(--gris);margin-bottom:24px;font-size:1.05rem}
+  h3{color:var(--azul);font-size:1.25rem;margin:22px 0 10px}
+  p{margin-bottom:12px}
+  strong{color:var(--azul)}
+  ul.lista{margin:8px 0 14px 4px;list-style:none}
+  ul.lista li{padding-left:28px;position:relative;margin-bottom:8px}
+  ul.lista li::before{content:"▸";position:absolute;left:6px;color:var(--azul2);font-weight:700}
+
+  .intro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:20px}
+  .pilar{background:var(--nube);border-radius:14px;padding:20px;border-left:5px solid var(--azul2)}
+  .pilar .ic{font-size:1.8rem;display:block;margin-bottom:8px}
+  .pilar b{color:var(--azul);display:block;margin-bottom:4px}
+  .pilar span{font-size:.92rem;color:var(--gris)}
+
+  /* callouts */
+  .aviso{border-radius:14px;padding:16px 20px;margin:18px 0;font-size:.98rem;border-left:6px solid}
+  .aviso.tip{background:#ecfdf5;border-color:var(--menta)}
+  .aviso.ojo{background:#fff7ed;border-color:var(--ambar)}
+  .aviso.dato{background:#eff6ff;border-color:var(--azul2)}
+  .aviso b{display:block;margin-bottom:2px}
+
+  /* Netiqueta dos columnas */
+  .dodont{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+  .col{border-radius:14px;padding:20px}
+  .col.si{background:#ecfdf5;border:1px solid #a7f3d0}
+  .col.no{background:#fef2f2;border:1px solid #fecaca}
+  .col h4{margin-bottom:10px;font-size:1.05rem}
+  .col.si h4{color:#047857}
+  .col.no h4{color:#b91c1c}
+  .col li{list-style:none;padding:6px 0 6px 26px;position:relative;font-size:.95rem}
+  .col.si li::before{content:"✅";position:absolute;left:0}
+  .col.no li::before{content:"🚫";position:absolute;left:0}
+  @media(max-width:640px){.dodont{grid-template-columns:1fr}.hero h1{font-size:2rem}}
+
+  /* Acordeón escenarios */
+  .acc{border:1px solid #e2e8f0;border-radius:12px;margin-bottom:10px;overflow:hidden}
+  .acc button{width:100%;text-align:left;background:#fff;border:0;padding:16px 18px;font-size:1rem;
+    font-weight:600;color:var(--tinta);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .acc button:hover{background:var(--nube)}
+  .acc .chev{transition:.3s;color:var(--azul2)}
+  .acc.open .chev{transform:rotate(180deg)}
+  .acc .body{max-height:0;overflow:hidden;transition:max-height .35s ease;background:#f8fafc}
+  .acc .body .inner{padding:14px 18px}
+
+  /* Cartas licencias flip */
+  .cc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;margin-top:20px}
+  .flip{background:transparent;height:180px;perspective:1000px;cursor:pointer}
+  .flip .in{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
+  .flip.act .in{transform:rotateY(180deg)}
+  .flip .face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;text-align:center}
+  .flip .front{background:linear-gradient(135deg,#fff,#eef2ff);border:2px solid #dbeafe}
+  .flip .front .sym{font-size:2.4rem;font-weight:800;color:var(--azul);letter-spacing:1px}
+  .flip .front b{margin-top:8px;font-size:.95rem}
+  .flip .back{background:linear-gradient(135deg,var(--azul2),var(--morado));color:#fff;transform:rotateY(180deg);font-size:.85rem}
+  .flip .hint{font-size:.7rem;color:var(--gris);margin-top:6px}
+
+  /* Espectro licencias */
+  .espectro{margin:24px 0 0;background:linear-gradient(90deg,#10b981,#f59e0b,#f43f5e);height:14px;border-radius:8px;position:relative}
+  .esp-lab{display:flex;justify-content:space-between;font-size:.82rem;color:var(--gris);margin-top:8px;font-weight:600}
+
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.92rem}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid #e2e8f0;vertical-align:top}
+  th{background:var(--nube);color:var(--azul)}
+  tr:hover td{background:#f8fafc}
+
+  /* Generador de cita IA */
+  .gen{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e2e8f0;border-radius:16px;padding:24px;margin-top:20px}
+  .gen h4{color:#fff;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .gen label{display:block;font-size:.85rem;margin:10px 0 4px;color:#94a3b8;font-weight:600}
+  .gen input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #334155;
+    background:#0b1220;color:#fff;font-size:.95rem}
+  .gen .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .gen .out{margin-top:18px;background:#020617;border:1px dashed #475569;border-radius:12px;padding:16px;font-size:.95rem}
+  .gen .out .ref{color:#7dd3fc;word-break:break-word;font-family:Georgia,serif;font-size:1rem}
+  .gen .out .cita{color:#a7f3d0;margin-top:10px;font-size:.9rem}
+  .gen small{color:#64748b}
+  @media(max-width:560px){.gen .row{grid-template-columns:1fr}}
+
+  /* pasos */
+  .pasos{counter-reset:p;margin-top:16px}
+  .paso{display:flex;gap:14px;margin-bottom:14px;align-items:flex-start}
+  .paso .n{counter-increment:p;background:var(--morado);color:#fff;min-width:34px;height:34px;border-radius:50%;
+    display:grid;place-items:center;font-weight:700;flex:none}
+  .paso .n::before{content:counter(p)}
+  .paso .tx b{color:var(--azul)}
+
+  /* Quiz */
+  .quiz .q{margin-bottom:22px}
+  .quiz .q p.preg{font-weight:600;margin-bottom:10px}
+  .quiz .opt{display:block;width:100%;text-align:left;background:#fff;border:2px solid #e2e8f0;
+    border-radius:12px;padding:12px 16px;margin-bottom:8px;cursor:pointer;font-size:.95rem;transition:.15s;color:var(--tinta)}
+  .quiz .opt:hover{border-color:var(--azul2)}
+  .quiz .opt.ok{background:#ecfdf5;border-color:var(--menta);color:#047857;font-weight:600}
+  .quiz .opt.no{background:#fef2f2;border-color:var(--coral);color:#b91c1c}
+  .quiz .fb{font-size:.9rem;margin-top:4px;color:var(--gris);display:none}
+  .score{text-align:center;font-size:1.15rem;font-weight:700;color:var(--azul);margin-top:10px}
+
+  /* reto */
+  .reto{background:linear-gradient(135deg,#f59e0b,#f43f5e);color:#fff;border-radius:20px;padding:34px;text-align:center}
+  .reto h2{color:#fff;font-size:1.7rem;margin-bottom:12px}
+  .reto p{opacity:.95}
+  .reto .chk{text-align:left;max-width:560px;margin:18px auto 0}
+  .reto .chk label{display:flex;gap:10px;background:rgba(255,255,255,.15);padding:12px 16px;border-radius:12px;margin-bottom:8px;cursor:pointer;align-items:center}
+  .reto input{width:20px;height:20px;accent-color:#fff;flex:none}
+
+  footer{background:var(--tinta);color:#cbd5e1;padding:36px 20px;text-align:center;font-size:.9rem}
+  .glos{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px;text-align:left}
+  .glos div{background:#1e293b;border-radius:12px;padding:14px}
+  .glos b{color:#fff;display:block;margin-bottom:3px}
+  .glos span{font-size:.85rem}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="emoji">🌐🧭</span>
+  <span class="tag">Digitalización · 4º ESO · Bloque</span>
+  <h1>Ciudadanía Digital Crítica</h1>
+  <p>Convivir, crear y compartir en Internet con cabeza: buenos modales, respeto a lo que crean otras personas y honestidad cuando usamos la inteligencia artificial.</p>
+</header>
+
+<nav class="indice">
+  <ul>
+    <li><a href="#intro">¿Qué es?</a></li>
+    <li><a href="#etiqueta">1 · Etiqueta digital</a></li>
+    <li><a href="#licencias">2 · Licencias</a></li>
+    <li><a href="#ia">3 · Referenciar la IA</a></li>
+    <li><a href="#quiz">Reto final</a></li>
+  </ul>
+</nav>
+
+<div class="wrap">
+
+<!-- INTRO -->
+<section id="intro">
+  <div class="card">
+    <h2 class="titulo"><span class="num">?</span> ¿Qué es la ciudadanía digital crítica?</h2>
+    <p class="subt">Ser ciudadano o ciudadana digital es mucho más que tener móvil. Es saber <strong>comportarse, decidir y participar</strong> en el mundo online con responsabilidad y espíritu crítico.</p>
+    <p>Cada vez que publicas una foto, comentas un vídeo, descargas una imagen para un trabajo o le pides algo a una IA, estás tomando decisiones que afectan a otras personas y a ti. La ciudadanía digital crítica te da las herramientas para tomar esas decisiones bien informado, sin dejarte llevar por el "todo el mundo lo hace".</p>
+    <div class="intro-grid">
+      <div class="pilar"><span class="ic">🤝</span><b>Respeto</b><span>Tratar a las personas online como lo harías cara a cara.</span></div>
+      <div class="pilar"><span class="ic">⚖️</span><b>Legalidad</b><span>Saber qué puedes usar, copiar o compartir… y qué no.</span></div>
+      <div class="pilar"><span class="ic">🔍</span><b>Honestidad</b><span>Dar crédito a quien crea, incluida la IA que utilizas.</span></div>
+    </div>
+    <div class="aviso dato"><b>💡 En este documento aprenderás a…</b>Comportarte con buena <em>netiqueta</em>, entender los tipos de <em>licencias</em> (©, Creative Commons, dominio público) y <em>referenciar</em> correctamente el contenido que genera una inteligencia artificial siguiendo las Normas APA.</div>
+  </div>
+</section>
+
+<!-- 1 ETIQUETA -->
+<section id="etiqueta">
+  <div class="card">
+    <h2 class="titulo"><span class="num">1</span> Etiqueta digital (Netiqueta)</h2>
+    <p class="subt">La <strong>netiqueta</strong> (de <em>net</em> = red + etiqueta) es el conjunto de normas de buena educación para comunicarnos en Internet: redes sociales, chats, correos, videollamadas o foros.</p>
+
+    <p>La regla de oro es sencilla: <strong>detrás de cada pantalla hay una persona real</strong>. Lo que en clase no dirías a la cara, tampoco deberías escribirlo en un grupo de WhatsApp.</p>
+
+    <div class="dodont">
+      <div class="col si">
+        <h4>Buenas prácticas</h4>
+        <ul>
+          <li>Saluda, da las gracias y cuida la ortografía.</li>
+          <li>Lee antes de responder y piensa 5 segundos antes de enviar.</li>
+          <li>Respeta la privacidad: pide permiso antes de compartir fotos de otros.</li>
+          <li>Cita tus fuentes y respeta el trabajo ajeno.</li>
+          <li>Denuncia el acoso; no lo alimentes con "me gusta" ni reenvíos.</li>
+        </ul>
+      </div>
+      <div class="col no">
+        <h4>Evita</h4>
+        <ul>
+          <li>ESCRIBIR TODO EN MAYÚSCULAS (equivale a gritar).</li>
+          <li>Insultar, humillar o hacer ciberacoso.</li>
+          <li>Reenviar bulos, cadenas o contenido sin verificar.</li>
+          <li>Hacer spam o etiquetar a gente sin permiso.</li>
+          <li>Suplantar identidades o compartir datos privados.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="aviso ojo"><b>👀 Huella digital</b>Todo lo que publicas deja rastro. Un comentario de hoy puede aparecer en una búsqueda dentro de 5 años, cuando busques trabajo o plaza en un ciclo. Publica pensando en tu "yo" del futuro.</div>
+
+    <h3>¿Qué harías tú? Pon a prueba tu criterio</h3>
+    <p class="subt" style="margin-bottom:14px">Pulsa cada situación para ver una respuesta con buena netiqueta.</p>
+
+    <div class="acc">
+      <button>Un compañero sube una foto tuya que no te gusta a Instagram <span class="chev">▾</span></button>
+      <div class="body"><div class="inner">Escríbele <strong>en privado</strong> y con respeto pidiéndole que la retire. Nada de montar un espectáculo público. Si no la quita o te sientes acosado, guarda una captura y díselo a un adulto de confianza. Tienes derecho a tu propia imagen.</div></div>
+    </div>
+    <div class="acc">
+      <button>En un grupo de clase se están riendo de otra persona <span class="chev">▾</span></button>
+      <div class="body"><div class="inner">No sumes "jajaja" ni reenvíes: eso también es acoso. Puedes escribir algo que corte la situación ("dejadlo ya") o apoyar a la víctima en privado. El silencio del grupo es lo que hace fuerte al acosador.</div></div>
+    </div>
+    <div class="acc">
+      <button>Recibes una cadena que dice "reenvía o tendrás mala suerte" <span class="chev">▾</span></button>
+      <div class="body"><div class="inner">No la reenvíes. Las cadenas son <strong>bulos</strong> diseñados para propagarse. Reenviar contribuye a la desinformación y satura los chats. Bórrala.</div></div>
+    </div>
+    <div class="acc">
+      <button>Un email al profesorado: ¿"ola k tal" o algo mejor? <span class="chev">▾</span></button>
+      <div class="body"><div class="inner">En contextos formales cuida el registro: asunto claro, un saludo ("Buenos días"), tu mensaje ordenado, una despedida y tu nombre y curso. La netiqueta también es saber <strong>adaptar el tono</strong> a cada situación.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 LICENCIAS -->
+<section id="licencias">
+  <div class="card">
+    <h2 class="titulo"><span class="num">2</span> Licencias: ¿qué puedo usar y compartir?</h2>
+    <p class="subt">Una <strong>licencia</strong> es el "permiso de uso" que el autor pone a su obra (foto, canción, texto, vídeo, programa). Te dice qué puedes hacer con ella. Que algo esté en Internet <strong>no significa</strong> que sea gratis ni libre.</p>
+
+    <div class="aviso dato"><b>⚖️ Derechos de autor (copyright)</b>Por defecto, toda obra está protegida por derechos de autor desde que se crea, aunque no lleve el símbolo ©. Para usarla necesitas permiso… salvo que el autor haya elegido una licencia más abierta.</div>
+
+    <div class="aviso ojo"><b>⚠️ Regla de oro: si no hay licencia, es © Copyright</b>Cuando una obra <strong>no indica ninguna licencia</strong>, debes asumir que tiene "todos los derechos reservados" (© Copyright). El copyright es <strong>automático</strong>: no hace falta registrarlo ni poner el símbolo. Así que "no pone nada" <strong>no</strong> significa "es libre", significa justo lo contrario. <em>(Excepción: las obras muy antiguas cuyos derechos ya han caducado pasan al dominio público.)</em></div>
+
+    <h3>El espectro de las licencias</h3>
+    <p>Las obras van desde "todos los derechos reservados" hasta "sin restricciones". Aquí lo tienes de más abierto a más cerrado:</p>
+    <div class="espectro"></div>
+    <div class="esp-lab"><span>🟢 Más libre<br>Dominio público / CC0</span><span>🟡 Uso con condiciones<br>Creative Commons</span><span>🔴 Más cerrado<br>© Todos los derechos</span></div>
+
+    <h3>Los grandes tipos</h3>
+    <table>
+      <tr><th>Tipo</th><th>¿Qué significa?</th><th>Ejemplo</th></tr>
+      <tr><td><strong>© Copyright</strong></td><td>Todos los derechos reservados. Necesitas permiso para copiar o reutilizar.</td><td>Una película, una canción de Spotify, un libro.</td></tr>
+      <tr><td><strong>Creative Commons</strong></td><td>El autor permite ciertos usos poniendo condiciones (ver abajo).</td><td>Wikipedia, muchas fotos de Flickr.</td></tr>
+      <tr><td><strong>Dominio público / CC0</strong></td><td>Sin derechos o renunciados: uso totalmente libre.</td><td>Obras muy antiguas, imágenes de Pixabay.</td></tr>
+      <tr><td><strong>Software libre / Open source</strong></td><td>Programas que puedes usar, estudiar y modificar (GPL, MIT…).</td><td>Linux, GIMP, VLC.</td></tr>
+    </table>
+
+    <h3>Creative Commons: los 4 símbolos clave</h3>
+    <p class="subt" style="margin-bottom:6px">Las licencias CC se construyen combinando estas piezas. <strong>Pulsa cada carta</strong> para descubrir qué significa.</p>
+    <div class="cc-grid">
+      <div class="flip"><div class="in">
+        <div class="face front"><div class="sym">BY</div><b>Atribución</b><span class="hint">Toca para girar</span></div>
+        <div class="face back">Debes <b>citar al autor</b> siempre. Está presente en TODAS las licencias CC.</div>
+      </div></div>
+      <div class="flip"><div class="in">
+        <div class="face front"><div class="sym">SA</div><b>Compartir Igual</b><span class="hint">Toca para girar</span></div>
+        <div class="face back">Si la modificas, debes publicar tu versión con la <b>misma licencia</b>.</div>
+      </div></div>
+      <div class="flip"><div class="in">
+        <div class="face front"><div class="sym">NC</div><b>No Comercial</b><span class="hint">Toca para girar</span></div>
+        <div class="face back">Puedes usarla, pero <b>no para ganar dinero</b>.</div>
+      </div></div>
+      <div class="flip"><div class="in">
+        <div class="face front"><div class="sym">ND</div><b>Sin Derivadas</b><span class="hint">Toca para girar</span></div>
+        <div class="face back">Puedes compartirla, pero <b>no modificarla</b>.</div>
+      </div></div>
+    </div>
+
+    <div class="aviso tip"><b>✅ Truco para clase</b>Para tus trabajos busca imágenes con licencia <strong>CC BY</strong> o <strong>CC0</strong>. En el buscador de Google Imágenes usa <em>Herramientas → Derechos de uso → Creative Commons</em>. Y recuerda: aunque sea CC, casi siempre debes <strong>nombrar al autor</strong>.</div>
+
+    <h3>Ejemplos de licencias CC combinadas</h3>
+    <ul class="lista">
+      <li><strong>CC BY</strong> → úsala como quieras, solo cita al autor. La más abierta.</li>
+      <li><strong>CC BY-SA</strong> → cita al autor y comparte tu versión igual (la de Wikipedia).</li>
+      <li><strong>CC BY-NC</strong> → cita al autor y no la uses para negocio.</li>
+      <li><strong>CC BY-NC-ND</strong> → la más restrictiva: cita, sin negocio y sin modificar.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 3 IA -->
+<section id="ia">
+  <div class="card">
+    <h2 class="titulo"><span class="num">3</span> Cómo referenciar contenido generado por IA</h2>
+    <p class="subt">Cuando usas ChatGPT, Gemini u otra IA en un trabajo, debes <strong>decirlo y citarlo</strong>. No hacerlo es una forma de plagio. Las Normas <strong>APA (7ª edición)</strong> ya explican cómo.</p>
+
+    <div class="aviso ojo"><b>🤔 ¿Por qué se cita la IA "como un programa"?</b>Una conversación con la IA <strong>no la puede recuperar otra persona</strong> (cada respuesta es única) y no hay un "humano" que comunique. Por eso APA la trata como <strong>software</strong>: se acredita a la empresa que creó el modelo.</div>
+
+    <h3>Los 4 elementos de la referencia</h3>
+    <div class="pasos">
+      <div class="paso"><span class="n"></span><span class="tx"><b>Autor</b> → la empresa que creó el modelo (p. ej. <em>OpenAI</em>).</span></div>
+      <div class="paso"><span class="n"></span><span class="tx"><b>Fecha</b> → el año de la versión que usaste.</span></div>
+      <div class="paso"><span class="n"></span><span class="tx"><b>Título</b> → el nombre del modelo <em>en cursiva</em> (p. ej. <em>ChatGPT</em>), seguido de la versión entre paréntesis y la descripción <em>[Modelo de lenguaje grande]</em> entre corchetes.</span></div>
+      <div class="paso"><span class="n"></span><span class="tx"><b>Fuente</b> → la URL para acceder al modelo.</span></div>
+    </div>
+
+    <h3>Formato oficial (APA 7)</h3>
+    <div class="aviso dato" style="font-family:Georgia,serif;font-size:1.02rem">
+      OpenAI. (2023). <em>ChatGPT</em> (versión del 14 de marzo) [Modelo de lenguaje grande]. https://chat.openai.com/chat
+    </div>
+    <p>Y dentro del texto:</p>
+    <ul class="lista">
+      <li><strong>Cita entre paréntesis:</strong> (OpenAI, 2023)</li>
+      <li><strong>Cita narrativa:</strong> OpenAI (2023)</li>
+    </ul>
+
+    <div class="aviso tip"><b>✅ Además del formato, sé honesto</b>Explica en tu trabajo (por ejemplo, en la introducción o en la metodología) <strong>cómo</strong> usaste la IA: qué le preguntaste (el <em>prompt</em>) y qué parte del texto es suya. Puedes incluir la conversación completa en un <strong>anexo</strong>.</div>
+
+    <div class="aviso ojo"><b>⚠️ Ojo: la URL es la del modelo, NO la de tu conversación</b>La URL de la referencia enlaza al <strong>lugar donde se accede a la herramienta</strong> (p. ej., https://chat.openai.com/chat), no al enlace de tu chat concreto. ¿Por qué? Porque una conversación con la IA <strong>no la puede reproducir otra persona</strong>: cada sesión genera una respuesta única. Por eso, si quieres que se vea el texto exacto que te dio la IA, cópialo en un <strong>anexo</strong> de tu trabajo, no lo dejes en la URL.</div>
+
+    <div class="aviso ojo"><b>⚠️ La IA se equivoca</b>La IA puede inventar datos y hasta fuentes que no existen (se llama "alucinación"). <strong>Verifica siempre</strong> la información en fuentes fiables antes de darla por buena. Citar la IA no te libra de comprobar lo que dice.</div>
+
+    <!-- Generador -->
+    <div class="gen">
+      <h4>🛠️ Generador de referencia APA para IA</h4>
+      <p style="color:#94a3b8;font-size:.9rem;margin-bottom:6px">Rellena los datos de la IA que has usado y obtén tu referencia lista para copiar.</p>
+      <div class="row">
+        <div><label>Empresa / autor</label><input id="g_aut" value="OpenAI"></div>
+        <div><label>Nombre del modelo</label><input id="g_mod" value="ChatGPT"></div>
+      </div>
+      <div class="row">
+        <div><label>Año</label><input id="g_ano" value="2026"></div>
+        <div><label>Versión</label><input id="g_ver" value="versión del 22 de julio"></div>
+      </div>
+      <label>Descripción entre corchetes</label>
+      <input id="g_desc" value="Modelo de lenguaje grande">
+      <label>URL de acceso</label>
+      <input id="g_url" value="https://chat.openai.com/chat">
+      <div class="out">
+        <div><small>Referencia (lista de referencias):</small><br><span class="ref" id="out_ref"></span></div>
+        <div class="cita" id="out_cita"></div>
+      </div>
+      <small>Basado en APA 7ª ed., plantilla de software (Sección 10.10).</small>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ + RETO -->
+<section id="quiz">
+  <div class="card quiz">
+    <h2 class="titulo"><span class="num">✓</span> Comprueba lo que sabes</h2>
+    <p class="subt">Elige la respuesta correcta en cada pregunta.</p>
+
+    <div class="q" data-ok="1">
+      <p class="preg">1. Encuentras una foto en Google para tu trabajo. ¿Qué debes comprobar?</p>
+      <button class="opt">Nada, si está en Internet es gratis.</button>
+      <button class="opt">Su licencia; y aun siendo Creative Commons, casi siempre debo citar al autor.</button>
+      <button class="opt">Solo que se vea bien.</button>
+      <p class="fb"></p>
+    </div>
+
+    <div class="q" data-ok="1">
+      <p class="preg">2. En la referencia APA de ChatGPT, ¿quién figura como autor?</p>
+      <button class="opt">La persona que hizo la pregunta.</button>
+      <button class="opt">La empresa que creó el modelo (p. ej., OpenAI).</button>
+      <button class="opt">Nadie, la IA no se cita.</button>
+      <p class="fb"></p>
+    </div>
+
+    <div class="q" data-ok="0">
+      <p class="preg">3. ¿Qué significa el símbolo <strong>NC</strong> en una licencia Creative Commons?</p>
+      <button class="opt">No puedes usar la obra con fines comerciales.</button>
+      <button class="opt">No puedes citar al autor.</button>
+      <button class="opt">No hay copyright.</button>
+      <p class="fb"></p>
+    </div>
+
+    <div class="q" data-ok="2">
+      <p class="preg">4. Escribir un mensaje TODO EN MAYÚSCULAS en un chat se interpreta como…</p>
+      <button class="opt">Que tienes prisa.</button>
+      <button class="opt">Buena educación digital.</button>
+      <button class="opt">Estar gritando: mala netiqueta.</button>
+      <p class="fb"></p>
+    </div>
+
+    <div class="score" id="score"></div>
+  </div>
+
+  <div class="card reto">
+    <h2>🚀 Reto: Ciudadano digital de nivel experto</h2>
+    <p>Antes de entregar cualquier trabajo digital este curso, marca esta lista. Si están todas… ¡lo estás haciendo genial!</p>
+    <div class="chk">
+      <label><input type="checkbox"> He tratado a todos con respeto y buena netiqueta.</label>
+      <label><input type="checkbox"> Las imágenes/vídeos que uso tienen licencia libre y cito a su autor.</label>
+      <label><input type="checkbox"> He indicado si he usado IA y con qué finalidad.</label>
+      <label><input type="checkbox"> He añadido la referencia APA de la IA utilizada.</label>
+      <label><input type="checkbox"> He verificado en otras fuentes lo que me dijo la IA.</label>
+    </div>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<footer>
+  <div class="wrap">
+    <h3 style="color:#fff;margin-bottom:6px">📚 Mini-glosario</h3>
+    <div class="glos">
+      <div><b>Netiqueta</b><span>Normas de buena educación en la red.</span></div>
+      <div><b>Huella digital</b><span>Rastro que dejamos con lo que publicamos.</span></div>
+      <div><b>Copyright ©</b><span>Todos los derechos reservados al autor.</span></div>
+      <div><b>Creative Commons</b><span>Licencias que permiten usos con condiciones.</span></div>
+      <div><b>Dominio público</b><span>Obras sin derechos: uso libre.</span></div>
+      <div><b>Alucinación (IA)</b><span>Cuando la IA inventa datos o fuentes falsas.</span></div>
+    </div>
+    <p style="margin-top:24px;font-size:1.05rem">Bloque <strong style="color:#fff">«Ciudadanía Digital Crítica»</strong></p>
+    <p style="opacity:.85;font-size:.92rem;margin-top:4px">Material educativo · Digitalización · 4.º ESO · Curso 2026</p>
+    <p style="margin-top:14px">Creado por <strong style="color:#fff">Susana Oubiña Falcón</strong> y <strong style="color:#fff">Claude (Opus 4.8)</strong></p>
+    <p style="opacity:.7;font-size:.82rem;margin-top:10px">Formato de cita de IA basado en las Normas APA 7.ª edición · Fuente: normasapa.pro / apastyle.apa.org</p>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.acc button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const acc=b.parentElement, body=acc.querySelector('.body');
+      const open=acc.classList.toggle('open');
+      body.style.maxHeight=open?body.scrollHeight+'px':0;
+    });
+  });
+  document.querySelectorAll('.flip').forEach(f=>f.addEventListener('click',()=>f.classList.toggle('act')));
+
+  const ids=['g_aut','g_mod','g_ano','g_ver','g_desc','g_url'];
+  function genRef(){
+    const v=id=>document.getElementById(id).value.trim();
+    const aut=v('g_aut'),mod=v('g_mod'),ano=v('g_ano'),ver=v('g_ver'),desc=v('g_desc'),url=v('g_url');
+    const verTxt=ver?` (${ver})`:'';
+    const descTxt=desc?` [${desc}]`:'';
+    document.getElementById('out_ref').innerHTML=
+      `${aut}. (${ano}). <em>${mod}</em>${verTxt}${descTxt}. ${url}`;
+    document.getElementById('out_cita').textContent=
+      `En el texto → paréntesis: (${aut}, ${ano})  ·  narrativa: ${aut} (${ano})`;
+  }
+  ids.forEach(id=>document.getElementById(id).addEventListener('input',genRef));
+  genRef();
+
+  let answered=0, correct=0;
+  const total=document.querySelectorAll('.quiz .q').length;
+  document.querySelectorAll('.quiz .q').forEach(q=>{
+    const ok=+q.dataset.ok;
+    const opts=q.querySelectorAll('.opt');
+    const fb=q.querySelector('.fb');
+    opts.forEach((o,i)=>o.addEventListener('click',()=>{
+      if(q.dataset.done)return;
+      q.dataset.done=1; answered++;
+      if(i===ok){o.classList.add('ok');correct++;fb.textContent='¡Correcto! 🎉';}
+      else{o.classList.add('no');opts[ok].classList.add('ok');fb.textContent='Casi. La respuesta correcta está marcada en verde.';}
+      fb.style.display='block';
+      if(answered===total){
+        document.getElementById('score').textContent=`Tu puntuación: ${correct}/${total} `+(correct===total?'🏆 ¡Perfecto!':correct>=total/2?'👍 ¡Bien!':'💪 Repasa y vuelve a intentarlo');
+      }
+    }));
+  });
+</script>
+</body>
+</html>
