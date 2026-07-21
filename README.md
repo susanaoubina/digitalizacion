@@ -1,4 +1,4 @@
-# Digitalización · 4.º ESO — Dispositivos digitales
+# Digitalización · 4.º ESO 
 
 Materiales educativos interactivos para la materia de **Dixitalización** (4.º ESO, LOMLOE). Recursos de aula alineados con el currículo oficial, que abarcan el **Bloque 1: «Dispositivos dixitais, sistemas operativos e de comunicación»**, el **Bloque 4: «Seguridade e benestar dixital»** y el bloque **«Cidadanía dixital crítica»**.
 
