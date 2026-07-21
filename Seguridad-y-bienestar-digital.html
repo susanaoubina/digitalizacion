@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seguridad y bienestar digital · Digitalización 4º ESO</title>
+<style>
+:root{
+  --bg:#0d1030; --bg2:#141a4a; --card:#1b2260; --card2:#232b78;
+  --accent:#00e5c0; --accent2:#6c5cff; --pink:#ff5d8f; --gold:#ffca3a;
+  --text:#eef1ff; --muted:#a6ade0; --good:#2ecc71; --bad:#ff5252; --warn:#ffb020;
+  --radius:18px; --shadow:0 18px 45px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  color:var(--text);
+  background:radial-gradient(1200px 700px at 10% -10%,#26307d 0%,transparent 60%),
+             radial-gradient(1000px 600px at 110% 10%,#4a1e6b 0%,transparent 55%),
+             linear-gradient(160deg,var(--bg),var(--bg2));
+  min-height:100vh;
+}
+a{color:var(--accent)}
+h1,h2,h3{margin:0 0 .4em}
+.wrap{max-width:1080px;margin:0 auto;padding:0 18px 80px}
+
+/* HERO */
+.hero{padding:46px 0 26px;text-align:center;position:relative}
+.badge-top{display:inline-block;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
+  padding:6px 16px;border-radius:999px;font-size:.8rem;letter-spacing:.5px;color:var(--muted);margin-bottom:18px}
+.hero h1{font-size:2.5rem;line-height:1.1;
+  background:linear-gradient(90deg,var(--accent),var(--accent2) 55%,var(--pink));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--muted);max-width:640px;margin:8px auto 0;font-size:1.05rem}
+.pillars{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+.pill{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);
+  padding:16px 20px;min-width:150px;box-shadow:var(--shadow)}
+.pill .ic{font-size:1.8rem}
+.pill b{display:block;margin-top:6px}
+.pill span{color:var(--muted);font-size:.82rem}
+
+/* SCORE BAR */
+.scorebar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);
+  background:rgba(13,16,48,.78);border-bottom:1px solid rgba(255,255,255,.08)}
+.scoreinner{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:10px 18px;flex-wrap:wrap}
+.score{display:flex;align-items:center;gap:8px;font-weight:700}
+.score .pts{color:var(--gold);font-size:1.15rem}
+.progresswrap{flex:1;min-width:160px;height:12px;background:rgba(255,255,255,.1);border-radius:999px;overflow:hidden}
+.progress{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s}
+.badges{display:flex;gap:6px;flex-wrap:wrap}
+.mini{font-size:1.25rem;filter:grayscale(1) opacity(.35);transition:.3s;cursor:default}
+.mini.on{filter:none;transform:scale(1.15)}
+
+/* NAV */
+.nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:26px 0 10px}
+.nav button{background:var(--card);color:var(--text);border:1px solid rgba(255,255,255,.1);
+  padding:10px 16px;border-radius:999px;cursor:pointer;font-size:.92rem;transition:.2s}
+.nav button:hover{border-color:var(--accent)}
+.nav button.active{background:linear-gradient(90deg,var(--accent2),var(--pink));border-color:transparent}
+
+/* SECTIONS */
+section{display:none;animation:fade .4s}
+section.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);
+  padding:22px 24px;margin:16px 0;box-shadow:var(--shadow)}
+.card h2{font-size:1.5rem}
+.lead{color:var(--muted);font-size:1.02rem}
+.tag{display:inline-block;background:rgba(108,92,255,.22);border:1px solid rgba(108,92,255,.5);
+  color:#cfc8ff;font-size:.72rem;padding:3px 10px;border-radius:999px;margin:2px 4px 2px 0}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+
+/* FLIP CARDS */
+.flip{background:transparent;perspective:1000px;height:180px;cursor:pointer}
+.flipin{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
+.flip.f .flipin{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;padding:16px;
+  display:flex;flex-direction:column;justify-content:center;border:1px solid rgba(255,255,255,.1)}
+.front{background:linear-gradient(150deg,var(--card2),#2c1e63)}
+.front .ic{font-size:2rem}
+.front b{margin-top:8px;font-size:1.05rem}
+.front small{color:var(--muted);margin-top:6px}
+.back{background:linear-gradient(150deg,#123a52,#0e2f6b);transform:rotateY(180deg);font-size:.9rem;color:#e7f6ff;overflow:auto}
+
+/* QUIZ */
+.q{margin:14px 0}
+.q .stem{font-weight:600;margin-bottom:8px}
+.opt{display:block;width:100%;text-align:left;background:var(--card2);color:var(--text);
+  border:1px solid rgba(255,255,255,.12);padding:11px 14px;border-radius:12px;margin:7px 0;cursor:pointer;transition:.2s}
+.opt:hover{border-color:var(--accent)}
+.opt.correct{background:rgba(46,204,113,.22);border-color:var(--good)}
+.opt.wrong{background:rgba(255,82,82,.2);border-color:var(--bad)}
+.opt.dim{opacity:.55}
+.fb{font-size:.88rem;margin-top:6px;padding:10px 12px;border-radius:10px;display:none}
+.fb.show{display:block}
+.fb.ok{background:rgba(46,204,113,.15);border:1px solid var(--good)}
+.fb.no{background:rgba(255,82,82,.15);border:1px solid var(--bad)}
+
+/* SIM: password */
+.simbox{background:var(--card2);border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,.1)}
+input[type=text],input[type=password]{width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.18);
+  background:#0f1440;color:var(--text);font-size:1rem}
+.meter{height:14px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden;margin:12px 0 6px}
+.meter>div{height:100%;width:0;transition:.3s}
+.checks li{margin:4px 0;color:var(--muted);list-style:none}
+.checks li.ok{color:var(--good)}
+.checks{padding-left:0}
+
+/* Phishing / decision */
+.msg{background:#0f1440;border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:14px;margin:10px 0}
+.msg .from{color:var(--muted);font-size:.82rem}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.btn{border:none;border-radius:10px;padding:10px 16px;cursor:pointer;font-weight:600;color:#0d1030}
+.btn.safe{background:var(--good)}
+.btn.danger{background:var(--bad);color:#fff}
+.btn.ghost{background:rgba(255,255,255,.1);color:var(--text)}
+.result{margin-top:10px;font-size:.9rem;display:none}
+.result.show{display:block}
+
+/* checklist privacy */
+.check{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid rgba(255,255,255,.1);
+  padding:10px 12px;border-radius:10px;margin:6px 0;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--accent)}
+
+/* callouts */
+.callout{border-left:4px solid var(--accent);background:rgba(0,229,192,.08);padding:12px 16px;border-radius:0 12px 12px 0;margin:12px 0}
+.danger-c{border-left-color:var(--pink);background:rgba(255,93,143,.1)}
+.help{border-left-color:var(--gold);background:rgba(255,202,58,.1)}
+
+/* table */
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,.1);text-align:left;vertical-align:top}
+th{color:var(--accent);font-size:.8rem;text-transform:uppercase;letter-spacing:.5px}
+
+.big{font-size:1.05rem}
+.center{text-align:center}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);
+  background:linear-gradient(90deg,var(--accent),var(--accent2));color:#04122e;font-weight:700;
+  padding:12px 22px;border-radius:999px;box-shadow:var(--shadow);transition:.4s;z-index:99}
+.toast.show{transform:translateX(-50%) translateY(0)}
+footer{color:var(--muted);text-align:center;font-size:.82rem;margin-top:40px}
+.scorefinal{font-size:3rem;color:var(--gold);font-weight:800}
+</style>
+</head>
+<body>
+
+<div class="scorebar">
+  <div class="scoreinner">
+    <div class="score">⭐ <span class="pts" id="pts">0</span> pts</div>
+    <div class="progresswrap"><div class="progress" id="prog"></div></div>
+    <div class="badges" id="badges">
+      <span class="mini" data-b="id" title="Guardián de la identidad">🎭</span>
+      <span class="mini" data-b="priv" title="Maestro de la privacidad">🔒</span>
+      <span class="mini" data-b="cyber" title="Ciberdefensor">🛡️</span>
+      <span class="mini" data-b="well" title="Equilibrio digital">💚</span>
+      <span class="mini" data-b="exam" title="Experto certificado">🏆</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <span class="badge-top">DIGITALIZACIÓN · 4º ESO · LOMLOE — Competencias específicas 3 y 4</span>
+    <h1>Seguridad y bienestar digital</h1>
+    <p>Tres pilares para protegerte en un mundo conectado: tu <b>identidad</b>, la <b>privacidad de tus datos</b> y la <b>ciberseguridad</b> de tus dispositivos y de ti mismo/a. Aprende jugando, gana puntos y desbloquea insignias.</p>
+    <div class="pillars">
+      <div class="pill"><div class="ic">🎭</div><b>Identidad</b><span>Huella y reputación</span></div>
+      <div class="pill"><div class="ic">🔒</div><b>Privacidad</b><span>Tus datos personales</span></div>
+      <div class="pill"><div class="ic">🛡️</div><b>Ciberseguridad</b><span>Dispositivos seguros</span></div>
+      <div class="pill"><div class="ic">💚</div><b>Bienestar</b><span>Salud física y mental</span></div>
+    </div>
+  </div>
+
+  <div class="nav" id="nav">
+    <button class="active" data-s="inicio">🏠 Inicio</button>
+    <button data-s="identidad">🎭 Identidad</button>
+    <button data-s="privacidad">🔒 Privacidad</button>
+    <button data-s="ciber">🛡️ Ciberseguridad</button>
+    <button data-s="bienestar">💚 Bienestar</button>
+    <button data-s="test">🏆 Test final</button>
+    <button data-s="docente">📋 Docente</button>
+  </div>
+
+  <!-- ============ INICIO ============ -->
+  <section id="inicio" class="active">
+    <div class="card">
+      <h2>👋 ¿De qué va este reto?</h2>
+      <p class="lead">Cada día dejamos rastros en la red, compartimos datos y usamos dispositivos que pueden ser atacados. Este bloque te da las herramientas para <b>prevenir riesgos</b> y para <b>reaccionar</b> cuando algo sale mal, cuidando tanto tu seguridad como tu bienestar.</p>
+      <div>
+        <span class="tag">Identidad digital</span><span class="tag">Reputación</span><span class="tag">Huella digital</span>
+        <span class="tag">Datos personales · RGPD</span><span class="tag">Contraseñas · 2FA</span><span class="tag">Malware · Phishing</span>
+        <span class="tag">Copias de seguridad</span><span class="tag">Ciberacoso</span><span class="tag">Dependencia tecnológica</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🎯 Cómo ganar</h3>
+      <p class="lead">Explora las 4 secciones, resuelve quizzes, usa los simuladores y supera el test final. Cada acierto suma puntos y cada sección superada desbloquea una <b>insignia</b> arriba. ¿Lograrás las 5 y el título de <b>Experto certificado</b> 🏆?</p>
+      <div class="grid g3" style="margin-top:12px">
+        <div class="simbox center"><div style="font-size:1.8rem">🧩</div><b>Quizzes</b><br><small class="muted">Preguntas autocorregibles</small></div>
+        <div class="simbox center"><div style="font-size:1.8rem">🔬</div><b>Simuladores</b><br><small class="muted">Contraseñas, phishing, privacidad</small></div>
+        <div class="simbox center"><div style="font-size:1.8rem">⚖️</div><b>Decisiones</b><br><small class="muted">Casos reales, tú eliges</small></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📚 Los saberes de este bloque (currículo)</h3>
+      <p class="lead">Basado en los saberes básicos de Digitalización 4º ESO: seguridad de <b>dispositivos</b>, de los <b>datos</b> y de la <b>integridad de las personas</b>. Trabajarás medidas preventivas y correctivas, configuración de la privacidad, gestión de la identidad virtual y prácticas saludables de uso.</p>
+    </div>
+  </section>
+
+  <!-- ============ IDENTIDAD ============ -->
+  <section id="identidad">
+    <div class="card">
+      <h2>🎭 Identidad, reputación y huella digital</h2>
+      <p class="lead">Tu <b>identidad digital</b> es todo lo que la red sabe de ti: perfiles, fotos, comentarios, "me gusta"... Tu <b>reputación digital</b> es la imagen que los demás se forman con ello, y la <b>huella digital</b> es el rastro que dejas, a veces sin darte cuenta.</p>
+      <p class="lead">Voltea las tarjetas para descubrir cada concepto 👇</p>
+      <div class="grid g3">
+        <div class="flip"><div class="flipin">
+          <div class="face front"><div class="ic">🧬</div><b>Identidad digital</b><small>Toca para saber más</small></div>
+          <div class="face back">Conjunto de datos e información que te representan en internet: nombre de usuario, avatar, publicaciones, historial... Puede coincidir o no con tu identidad real.</div>
+        </div></div>
+        <div class="flip"><div class="flipin">
+          <div class="face front"><div class="ic">👣</div><b>Huella digital</b><small>Toca para saber más</small></div>
+          <div class="face back"><b>Activa:</b> lo que publicas voluntariamente. <b>Pasiva:</b> datos que se recogen sin que actúes (cookies, geolocalización, historial). ¡Casi todo queda registrado!</div>
+        </div></div>
+        <div class="flip"><div class="flipin">
+          <div class="face front"><div class="ic">⭐</div><b>Reputación digital</b><small>Toca para saber más</small></div>
+          <div class="face back">La opinión que los demás (amigos, empresas, universidades) se forman de ti según tu huella. Es difícil de borrar y puede afectar a tu futuro.</div>
+        </div></div>
+        <div class="flip"><div class="flipin">
+          <div class="face front"><div class="ic">🎣</div><b>Suplantación de identidad</b><small>Toca para saber más</small></div>
+          <div class="face back">Alguien se hace pasar por ti (perfil falso, cuenta robada) para engañar o dañar tu imagen. Es un delito. Denúncialo y avisa a tus contactos.</div>
+        </div></div>
+        <div class="flip"><div class="flipin">
+          <div class="face front"><div class="ic">🗺️</div><b>Identidad virtual</b><small>Toca para saber más</small></div>
+          <div class="face back">La gestionas tú: decide qué mostrar, con quién y cómo. Cuida tu avatar, tus nicks y la coherencia entre tus perfiles.</div>
+        </div></div>
+        <div class="flip"><div class="flipin">
+          <div class="face front"><div class="ic">♻️</div><b>Derecho al olvido</b><small>Toca para saber más</small></div>
+          <div class="face back">Puedes pedir que se retiren enlaces con datos tuyos obsoletos o dañinos. Pero prevenir es mejor que corregir: piensa antes de publicar.</div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🧩 Quiz: identidad y huella</h3>
+      <div class="q" data-q>
+        <div class="stem">1. Publicas una foto de fiesta y luego la borras a los 5 minutos. ¿Qué es MÁS cierto?</div>
+        <button class="opt" data-c="0">Ya no existe rastro, borrar equivale a eliminarla de internet.</button>
+        <button class="opt" data-c="1">Alguien pudo verla, descargarla o hacer captura: la huella puede permanecer.</button>
+        <button class="opt" data-c="0">Solo la ven quienes estaban en la fiesta.</button>
+        <div class="fb"></div>
+      </div>
+      <div class="q" data-q>
+        <div class="stem">2. ¿Cuál es un ejemplo de huella digital PASIVA?</div>
+        <button class="opt" data-c="1">Las cookies y la ubicación que registran las webs mientras navegas.</button>
+        <button class="opt" data-c="0">Un comentario que escribes en un vídeo.</button>
+        <button class="opt" data-c="0">Una story que subes a tus redes.</button>
+        <div class="fb"></div>
+      </div>
+      <div class="q" data-q>
+        <div class="stem">3. Descubres un perfil falso con tu nombre y tus fotos. ¿Qué haces primero?</div>
+        <button class="opt" data-c="1">Reportar el perfil a la plataforma, guardar pruebas (capturas) y avisar a mis contactos.</button>
+        <button class="opt" data-c="0">Insultar a quien lo ha creado por privado.</button>
+        <button class="opt" data-c="0">Ignorarlo, seguro que desaparece solo.</button>
+        <div class="fb"></div>
+      </div>
+      <p class="muted big" data-progress>Responde las 3 preguntas para desbloquear la insignia 🎭</p>
+    </div>
+  </section>
+
+  <!-- ============ PRIVACIDAD ============ -->
+  <section id="privacidad">
+    <div class="card">
+      <h2>🔒 Privacidad y protección de datos</h2>
+      <p class="lead">Tus <b>datos personales</b> (nombre, edad, ubicación, gustos, fotos, contactos) valen mucho. El <b>RGPD</b> y la ley española (LOPDGDD) te protegen: puedes acceder, rectificar, oponerte y pedir que borren tus datos. Menores de 14 años necesitan consentimiento de sus tutores para muchos servicios.</p>
+      <div class="callout">💡 Regla de oro: <b>si un servicio es gratis, muchas veces el producto eres tú</b> (tus datos). Comparte lo mínimo imprescindible.</div>
+    </div>
+
+    <div class="card">
+      <h3>🔬 Simulador: revisa la privacidad de tu red social</h3>
+      <p class="lead">Marca las configuraciones que YA tienes activadas. El medidor te dirá cómo de protegido/a estás.</p>
+      <div id="privlist">
+        <label class="check"><input type="checkbox" data-p> Mi perfil es privado (solo me siguen personas que acepto).</label>
+        <label class="check"><input type="checkbox" data-p> Reviso y limito quién puede ver mis publicaciones y stories.</label>
+        <label class="check"><input type="checkbox" data-p> Tengo desactivada la ubicación/geolocalización en las fotos.</label>
+        <label class="check"><input type="checkbox" data-p> Reviso los permisos de las apps (cámara, micro, contactos).</label>
+        <label class="check"><input type="checkbox" data-p> No comparto datos sensibles: dirección, DNI, horarios, colegio.</label>
+        <label class="check"><input type="checkbox" data-p> Reviso las etiquetas antes de que aparezcan en mi perfil.</label>
+        <label class="check"><input type="checkbox" data-p> Rechazo o limito las cookies no esenciales al entrar en webs.</label>
+      </div>
+      <div class="meter"><div id="privmeter"></div></div>
+      <p id="privtxt" class="big">Marca opciones para ver tu nivel de privacidad.</p>
+    </div>
+
+    <div class="card">
+      <h3>🧩 Quiz: datos y privacidad</h3>
+      <div class="q" data-q>
+        <div class="stem">1. Una app de linterna te pide acceso a tus contactos, micrófono y ubicación. ¿Qué es lo razonable?</div>
+        <button class="opt" data-c="1">Sospechar: una linterna no necesita esos permisos. Los deniego o busco otra app.</button>
+        <button class="opt" data-c="0">Aceptar todo, si no la app no funcionará.</button>
+        <button class="opt" data-c="0">Aceptar solo si la app tiene muchas descargas.</button>
+        <div class="fb"></div>
+      </div>
+      <div class="q" data-q>
+        <div class="stem">2. Según el RGPD, ¿cuál de estos derechos NO tienes sobre tus datos?</div>
+        <button class="opt" data-c="0">Acceder a los datos que una empresa guarda de ti.</button>
+        <button class="opt" data-c="0">Rectificar datos incorrectos o pedir que los borren.</button>
+        <button class="opt" data-c="1">Exigir que la empresa te pague un sueldo por usar sus servicios.</button>
+        <div class="fb"></div>
+      </div>
+      <div class="q" data-q>
+        <div class="stem">3. ¿Qué dato es más sensible y NO deberías publicar abiertamente?</div>
+        <button class="opt" data-c="0">Tu color favorito.</button>
+        <button class="opt" data-c="1">La foto de tu horario con el nombre del instituto y tus rutas.</button>
+        <button class="opt" data-c="0">Una reseña de una película.</button>
+        <div class="fb"></div>
+      </div>
+      <p class="muted big" data-progress>Responde las 3 preguntas para desbloquear la insignia 🔒</p>
+    </div>
+  </section>
+
+  <!-- ============ CIBERSEGURIDAD ============ -->
+  <section id="ciber">
+    <div class="card">
+      <h2>🛡️ Ciberseguridad: protege tus dispositivos</h2>
+      <p class="lead">La ciberseguridad protege dispositivos y datos frente a amenazas: <b>malware</b> (virus, troyanos, ransomware), <b>phishing</b> (engaños para robar datos), redes wifi inseguras... Con medidas <b>preventivas</b> (contraseñas fuertes, actualizaciones, antivirus, copias) y <b>correctivas</b> reduces mucho el riesgo.</p>
+    </div>
+
+    <div class="card">
+      <h3>🔬 Simulador: ¿es fuerte tu contraseña?</h3>
+      <p class="lead">Escribe una contraseña de PRUEBA (no uses una real). Verás su fortaleza al instante.</p>
+      <div class="simbox">
+        <input type="text" id="pw" placeholder="Escribe una contraseña de ejemplo..." autocomplete="off">
+        <div class="meter"><div id="pwmeter"></div></div>
+        <b id="pwtxt">—</b>
+        <ul class="checks" id="pwchecks" style="margin-top:10px">
+          <li data-k="len">Al menos 12 caracteres</li>
+          <li data-k="upp">Mayúsculas y minúsculas</li>
+          <li data-k="num">Números</li>
+          <li data-k="sym">Símbolos (!@#$…)</li>
+          <li data-k="common">No es una contraseña típica (1234, password…)</li>
+        </ul>
+      </div>
+      <div class="callout" style="margin-top:14px">🔑 Truco pro: usa una <b>frase de paso</b> larga ("Mi_Gato_Corre_7_Millas!") y un <b>gestor de contraseñas</b>. Activa siempre la <b>verificación en dos pasos (2FA)</b>.</div>
+    </div>
+
+    <div class="card">
+      <h3>🎣 Simulador: ¿phishing o legítimo?</h3>
+      <p class="lead">Lee cada mensaje y decide. Fíjate en el remitente, las prisas, los enlaces y las faltas.</p>
+
+      <div class="msg" data-ph="1">
+        <div class="from">De: seguridad@banc0-online.net · Asunto: ⚠️ ¡Tu cuenta será bloqueada HOY!</div>
+        <p>"Estimado cliente, hemos detectado actividad sospechosa. Confirma tu contraseña y tu PIN en las próximas 2 horas o perderás el acceso: http://banco-verifica.xyz/login"</p>
+        <div class="btnrow">
+          <button class="btn danger" data-a="1">🎣 Es phishing</button>
+          <button class="btn safe" data-a="0">✅ Es legítimo</button>
+        </div>
+        <div class="result"></div>
+      </div>
+
+      <div class="msg" data-ph="0">
+        <div class="from">De: no-reply@instituto.edu · Asunto: Recordatorio: entrega de proyecto</div>
+        <p>"Hola, os recuerdo que el proyecto de Digitalización se entrega el viernes en la plataforma habitual. Cualquier duda, respondedme por el correo del centro. Un saludo, el profesor."</p>
+        <div class="btnrow">
+          <button class="btn danger" data-a="1">🎣 Es phishing</button>
+          <button class="btn safe" data-a="0">✅ Es legítimo</button>
+        </div>
+        <div class="result"></div>
+      </div>
+
+      <div class="msg" data-ph="1">
+        <div class="from">De: premios@tu-regalo-gratis.com · Asunto: 🎉 ¡Has ganado un iPhone!</div>
+        <p>"¡Felicidades!!! Eres el visitante 1.000.000. Reclama tu iPhone GRATIS ahora rellenando tus datos y un pago de envío de 2€: pincha AQUÍ."</p>
+        <div class="btnrow">
+          <button class="btn danger" data-a="1">🎣 Es phishing</button>
+          <button class="btn safe" data-a="0">✅ Es legítimo</button>
+        </div>
+        <div class="result"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🧩 Quiz: buenas prácticas de seguridad</h3>
+      <div class="q" data-q>
+        <div class="stem">1. La mejor defensa para no perder tus trabajos si el ordenador se estropea o hay ransomware es...</div>
+        <button class="opt" data-c="1">Hacer copias de seguridad periódicas (nube + disco externo).</button>
+        <button class="opt" data-c="0">Guardar todo solo en el escritorio.</button>
+        <button class="opt" data-c="0">Confiar en que nunca pasará nada.</button>
+        <div class="fb"></div>
+      </div>
+      <div class="q" data-q>
+        <div class="stem">2. Estás en una wifi pública gratuita del centro comercial. ¿Qué evitas hacer?</div>
+        <button class="opt" data-c="1">Entrar en el banco o hacer compras con tarjeta sin protección.</button>
+        <button class="opt" data-c="0">Leer noticias o ver un vídeo.</button>
+        <button class="opt" data-c="0">Buscar una tienda en el mapa.</button>
+        <div class="fb"></div>
+      </div>
+      <div class="q" data-q>
+        <div class="stem">3. ¿Para qué sirve la verificación en dos pasos (2FA)?</div>
+        <button class="opt" data-c="1">Añadir una segunda barrera (código al móvil) aunque roben tu contraseña.</button>
+        <button class="opt" data-c="0">Hacer que la contraseña caduque cada día.</button>
+        <button class="opt" data-c="0">Que la web cargue más rápido.</button>
+        <div class="fb"></div>
+      </div>
+      <div class="q" data-q>
+        <div class="stem">4. Recibes un archivo .exe de un desconocido por chat. ¿Qué haces?</div>
+        <button class="opt" data-c="1">No lo abro; podría ser malware. Lo borro y no doy datos.</button>
+        <button class="opt" data-c="0">Lo abro para ver qué es.</button>
+        <button class="opt" data-c="0">Lo reenvío a mis amigos.</button>
+        <div class="fb"></div>
+      </div>
+      <p class="muted big" data-progress>Responde las 4 preguntas para desbloquear la insignia 🛡️</p>
+    </div>
+  </section>
+
+  <!-- ============ BIENESTAR ============ -->
+  <section id="bienestar">
+    <div class="card">
+      <h2>💚 Bienestar digital: tu salud física y mental</h2>
+      <p class="lead">La seguridad también protege a las <b>personas</b>. En la red existen riesgos para tu bienestar: <b>ciberacoso</b>, <b>sextorsión</b>, <b>grooming</b>, <b>discurso de odio</b>, contenidos inapropiados y la <b>dependencia tecnológica</b>. Reconocerlos y saber pedir ayuda es parte de tu seguridad.</p>
+      <div class="grid g2">
+        <div class="flip"><div class="flipin">
+          <div class="face front"><div class="ic">😔</div><b>Ciberacoso</b><small>Toca para saber más</small></div>
+          <div class="face back">Acoso repetido a través de medios digitales: insultos, humillación, exclusión, difusión de rumores o imágenes. Guarda pruebas, no respondas al ataque, bloquea y pide ayuda a un adulto.</div>
+        </div></div>
+        <div class="flip"><div class="flipin">
+          <div class="face front"><div class="ic">📸</div><b>Sextorsión</b><small>Toca para saber más</small></div>
+          <div class="face back">Chantaje con imágenes íntimas para conseguir dinero o más contenido. NUNCA cedas ni pagues. No borres las pruebas, corta el contacto y cuéntaselo a un adulto de confianza. Es un delito.</div>
+        </div></div>
+        <div class="flip"><div class="flipin">
+          <div class="face front"><div class="ic">🕵️</div><b>Grooming</b><small>Toca para saber más</small></div>
+          <div class="face back">Un adulto se gana la confianza de un/a menor fingiendo ser otra persona para abusar. Desconfía de quien pide fotos, secretos o encuentros. Habla con un adulto.</div>
+        </div></div>
+        <div class="flip"><div class="flipin">
+          <div class="face front"><div class="ic">🗯️</div><b>Discurso de odio</b><small>Toca para saber más</small></div>
+          <div class="face back">Mensajes que insultan o incitan al odio por raza, género, religión, orientación... No lo difundas, repórtalo y muestra apoyo a quien lo sufre.</div>
+        </div></div>
+        <div class="flip"><div class="flipin">
+          <div class="face front"><div class="ic">⏳</div><b>Dependencia tecnológica</b><small>Toca para saber más</small></div>
+          <div class="face back">Uso excesivo que afecta al sueño, estudios, relaciones o estado de ánimo. Señales: ansiedad sin el móvil, perder la noción del tiempo. Pon límites y descansos.</div>
+        </div></div>
+        <div class="flip"><div class="flipin">
+          <div class="face front"><div class="ic">🚫</div><b>Contenido inapropiado</b><small>Toca para saber más</small></div>
+          <div class="face back">Violento, sexual o falso. Usa filtros, no lo compartas y avisa si te llega. Verifica antes de creer o difundir (bulos).</div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>⚖️ Decisiones: ¿qué harías tú?</h3>
+      <p class="lead">Elige la mejor respuesta en cada situación real.</p>
+
+      <div class="msg" data-dec>
+        <p><b>Situación 1.</b> Un grupo de clase crea un chat para insultar a un compañero y te añaden. ¿Qué haces?</p>
+        <div class="btnrow">
+          <button class="btn ghost" data-good="1">🛑 No participo, guardo pruebas y apoyo a la víctima; lo comunico a un adulto.</button>
+          <button class="btn ghost" data-good="0">😐 Me quedo callado/a, total no soy yo quien insulta.</button>
+          <button class="btn ghost" data-good="0">😅 Río los mensajes para no quedar mal con el grupo.</button>
+        </div>
+        <div class="result"></div>
+      </div>
+
+      <div class="msg" data-dec>
+        <p><b>Situación 2.</b> Alguien que conociste por internet te pide una foto íntima "de confianza". ¿Qué haces?</p>
+        <div class="btnrow">
+          <button class="btn ghost" data-good="1">🚫 No la envío. Ninguna imagen íntima es segura; corto el contacto y lo cuento.</button>
+          <button class="btn ghost" data-good="0">📷 La envío solo si promete borrarla.</button>
+          <button class="btn ghost" data-good="0">🤔 La envío pero sin que se vea la cara.</button>
+        </div>
+        <div class="result"></div>
+      </div>
+
+      <div class="msg" data-dec>
+        <p><b>Situación 3.</b> Llevas 4 horas seguidas de móvil, no has dormido y mañana tienes examen. ¿Qué haces?</p>
+        <div class="btnrow">
+          <button class="btn ghost" data-good="1">😴 Activo el modo descanso, dejo el móvil fuera del cuarto y me acuesto.</button>
+          <button class="btn ghost" data-good="0">📱 Solo 5 minutos más... (y otros 5, y otros 5).</button>
+          <button class="btn ghost" data-good="0">☕ Me quedo despierto/a con el móvil, ya dormiré en clase.</button>
+        </div>
+        <div class="result"></div>
+      </div>
+    </div>
+
+    <div class="card help">
+      <h3>🆘 ¿Dónde pedir ayuda?</h3>
+      <p class="lead">Ante ciberacoso, sextorsión o grooming, <b>no estás solo/a</b>. Habla con un adulto de confianza (familia, profesorado, orientación) y recuerda estos recursos en España:</p>
+      <ul>
+        <li><b>017</b> — Línea de ayuda en ciberseguridad de INCIBE (gratuita y confidencial).</li>
+        <li><b>Fundación ANAR</b> — Teléfono/chat de ayuda a niños y adolescentes: <b>900 20 20 10</b>.</li>
+        <li><b>112</b> — Emergencias, si hay peligro inmediato.</li>
+        <li>Reporta y bloquea en la propia plataforma; guarda siempre las pruebas.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ TEST FINAL ============ -->
+  <section id="test">
+    <div class="card">
+      <h2>🏆 Test final certificado</h2>
+      <p class="lead">8 preguntas que mezclan los cuatro pilares. Responde y consigue la insignia de <b>Experto certificado</b>.</p>
+      <div id="examwrap"></div>
+      <div class="card center" id="examresult" style="display:none">
+        <div class="scorefinal" id="examscore">0/8</div>
+        <p class="big" id="exammsg"></p>
+        <button class="btn safe" onclick="location.reload()">🔄 Reintentar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DOCENTE ============ -->
+  <section id="docente">
+    <div class="card">
+      <h2>📋 Guía y rúbrica para el profesorado</h2>
+      <p class="lead">Recurso alineado con <b>Digitalización, 4º ESO (LOMLOE)</b>, bloque <b>«Seguridad y bienestar digital»</b>. Trabaja principalmente las competencias específicas relativas a la seguridad de dispositivos y datos y a la ciudadanía digital crítica.</p>
+    </div>
+
+    <div class="card">
+      <h3>🎯 Objetivos / criterios de evaluación</h3>
+      <table>
+        <tr><th>Pilar</th><th>El alumnado es capaz de…</th></tr>
+        <tr><td>Identidad</td><td>Gestionar su identidad y reputación digital, comprendiendo la huella activa/pasiva y actuando ante suplantaciones.</td></tr>
+        <tr><td>Privacidad</td><td>Configurar la privacidad en redes y apps, y reconocer sus derechos sobre los datos (RGPD/LOPDGDD).</td></tr>
+        <tr><td>Ciberseguridad</td><td>Aplicar medidas preventivas (contraseñas robustas, 2FA, actualizaciones, antivirus, copias) e identificar malware y phishing.</td></tr>
+        <tr><td>Bienestar</td><td>Reconocer riesgos (ciberacoso, sextorsión, grooming, dependencia) y saber reaccionar y pedir ayuda.</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>📊 Rúbrica de evaluación (4 niveles)</h3>
+      <table>
+        <tr><th>Criterio</th><th>Iniciado (1)</th><th>En proceso (2)</th><th>Competente (3)</th><th>Avanzado (4)</th></tr>
+        <tr><td>Identidad y huella</td><td>No distingue conceptos.</td><td>Los identifica con ayuda.</td><td>Explica y aplica ejemplos.</td><td>Analiza casos y propone mejoras de reputación.</td></tr>
+        <tr><td>Privacidad de datos</td><td>Comparte datos sin control.</td><td>Configura privacidad básica.</td><td>Ajusta permisos y conoce sus derechos.</td><td>Evalúa riesgos y asesora a otros.</td></tr>
+        <tr><td>Ciberseguridad</td><td>No aplica medidas.</td><td>Aplica alguna con ayuda.</td><td>Aplica contraseñas, 2FA y copias.</td><td>Detecta amenazas y planifica prevención.</td></tr>
+        <tr><td>Bienestar digital</td><td>No reconoce riesgos.</td><td>Reconoce algún riesgo.</td><td>Reacciona y sabe pedir ayuda.</td><td>Diseña pautas de uso saludable y prevención.</td></tr>
+      </table>
+      <div class="callout" style="margin-top:12px">💡 Sugerencia de calificación: media de los 4 criterios. El <b>test final ≥ 6/8</b> puede equivaler al nivel «Competente».</div>
+    </div>
+
+    <div class="card">
+      <h3>🧭 Propuesta de secuencia (situación de aprendizaje)</h3>
+      <p class="lead"><b>Reto:</b> "Auditoría de seguridad digital personal". En 4-5 sesiones el alumnado explora las secciones, realiza los simuladores, elabora un <b>decálogo de seguridad</b> y una <b>campaña</b> (cartel/vídeo corto) para concienciar al centro. Producto final evaluable con la rúbrica. Ideal para trabajo cooperativo y conexión con Educación en Valores y Tutoría.</p>
+    </div>
+  </section>
+
+  <footer>
+    Recurso educativo interactivo · Digitalización 4º ESO · Bloque «Seguridad y bienestar digital» · 2026<br>
+    Basado en los saberes básicos del currículo LOMLOE. Recursos de ayuda: INCIBE (017), Fundación ANAR (900 20 20 10), 112.
+  </footer>
+</div>
+
+<div class="toast" id="toast">¡+10 puntos!</div>
+
+<script>
+/* ---------- estado ---------- */
+const state={pts:0,badges:{id:false,priv:false,cyber:false,well:false,exam:false},done:new Set()};
+const MAXPTS=380;
+const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
+try{const s=JSON.parse(localStorage.getItem('sbd'));if(s){Object.assign(state,s);state.done=new Set(s.done||[])}}catch(e){}
+
+function save(){try{localStorage.setItem('sbd',JSON.stringify({...state,done:[...state.done]}))}catch(e){}}
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1400)}
+function addPts(n,msg){state.pts+=n;render();toast(msg||('+'+n+' puntos!'));save()}
+function render(){
+  $('#pts').textContent=state.pts;
+  $('#prog').style.width=Math.min(100,state.pts/MAXPTS*100)+'%';
+  for(const k in state.badges){const m=document.querySelector('.mini[data-b="'+k+'"]');if(m)m.classList.toggle('on',state.badges[k])}
+}
+function grantBadge(k,name){if(!state.badges[k]){state.badges[k]=true;render();toast('🏅 Insignia: '+name);addPts(30,'🏅 +30 por insignia');save()}}
+
+/* ---------- navegación ---------- */
+$$('#nav button').forEach(b=>b.onclick=()=>{
+  $$('#nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+  $$('section').forEach(s=>s.classList.remove('active'));$('#'+b.dataset.s).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+/* ---------- flip cards ---------- */
+$$('.flip').forEach(f=>f.onclick=()=>f.classList.toggle('f'));
+
+/* ---------- quizzes por sección ---------- */
+function wireQuiz(sectionId,badgeKey,badgeName){
+  const qs=$$('#'+sectionId+' .q[data-q]');
+  qs.forEach((q,i)=>{
+    const opts=q.querySelectorAll('.opt');const fb=q.querySelector('.fb');
+    opts.forEach(o=>o.onclick=()=>{
+      if(q.dataset.answered)return;
+      q.dataset.answered='1';
+      const ok=o.dataset.c==='1';
+      opts.forEach(x=>{if(x.dataset.c==='1')x.classList.add('correct');else x.classList.add('dim')});
+      if(!ok)o.classList.add('wrong');
+      fb.classList.add('show',ok?'ok':'no');
+      fb.textContent=ok?'✅ ¡Correcto!':'❌ Revisa: la opción resaltada en verde es la adecuada.';
+      addPts(ok?10:3, ok?'✅ +10':'+3 por intentarlo');
+      checkSection(sectionId,badgeKey,badgeName);
+    });
+  });
+}
+function checkSection(sectionId,badgeKey,badgeName){
+  const qs=$$('#'+sectionId+' .q[data-q]');
+  const all=qs.every(q=>q.dataset.answered);
+  const p=$('#'+sectionId+' [data-progress]');
+  const answered=qs.filter(q=>q.dataset.answered).length;
+  if(p)p.textContent=all?('🎉 ¡Sección completada!'):(answered+'/'+qs.length+' respondidas');
+  if(all)grantBadge(badgeKey,badgeName);
+}
+wireQuiz('identidad','id','Guardián de la identidad');
+wireQuiz('privacidad','priv','Maestro de la privacidad');
+wireQuiz('ciber','cyber','Ciberdefensor');
+
+/* ---------- simulador privacidad ---------- */
+const privBoxes=$$('#privlist input[data-p]');
+function privUpdate(){
+  const n=privBoxes.filter(b=>b.checked).length;const pct=n/privBoxes.length*100;
+  const m=$('#privmeter');m.style.width=pct+'%';
+  m.style.background=pct<40?'var(--bad)':pct<75?'var(--warn)':'var(--good)';
+  const t=$('#privtxt');
+  t.textContent = pct<40?'🔴 Nivel bajo: estás demasiado expuesto/a. Revisa tus ajustes.':
+                  pct<75?'🟡 Nivel medio: vas por buen camino, ajusta lo que falta.':
+                  pct<100?'🟢 Nivel alto: ¡buena protección!':'🟢 ¡Máxima privacidad! Eres un ejemplo.';
+  if(pct===100)grantBadge('priv','Maestro de la privacidad');
+}
+privBoxes.forEach(b=>b.onchange=()=>{privUpdate();if(b.checked)addPts(5)});
+
+/* ---------- simulador contraseña ---------- */
+const pw=$('#pw');
+pw.oninput=()=>{
+  const v=pw.value;
+  const checks={len:v.length>=12,upp:/[a-z]/.test(v)&&/[A-Z]/.test(v),num:/[0-9]/.test(v),
+    sym:/[^A-Za-z0-9]/.test(v),common:v.length>0&&!/^(1234|12345|123456|password|contrasena|contraseña|qwerty|admin|000000|iloveyou)/i.test(v)};
+  let score=0;for(const k in checks){const li=document.querySelector('#pwchecks li[data-k="'+k+'"]');li.classList.toggle('ok',checks[k]);if(checks[k])score++}
+  const pct=score/5*100;const m=$('#pwmeter');m.style.width=pct+'%';
+  m.style.background=pct<40?'var(--bad)':pct<80?'var(--warn)':'var(--good)';
+  const labels=['Muy débil','Débil','Mejorable','Fuerte','Muy fuerte','¡Excelente!'];
+  $('#pwtxt').textContent=v?('Fortaleza: '+labels[score]):'—';
+};
+
+/* ---------- phishing ---------- */
+$$('.msg[data-ph]').forEach(m=>{
+  const phishing=m.dataset.ph==='1';const res=m.querySelector('.result');
+  m.querySelectorAll('.btn').forEach(b=>b.onclick=()=>{
+    if(m.dataset.done)return;m.dataset.done='1';
+    const said=b.dataset.a==='1';const ok=said===phishing;
+    res.classList.add('show');res.style.color=ok?'var(--good)':'var(--bad)';
+    res.innerHTML=(ok?'✅ ¡Bien! ':'❌ Ojo. ')+(phishing?
+      'Es <b>phishing</b>: remitente falso, urgencia, enlace sospechoso y piden datos secretos. Nunca hagas clic ni des tu contraseña.':
+      'Es <b>legítimo</b>: remitente conocido, tono normal, sin pedir datos sensibles ni enlaces raros.');
+    addPts(ok?10:3);
+    if($$('.msg[data-ph]').every(x=>x.dataset.done))grantBadge('cyber','Ciberdefensor');
+  });
+});
+
+/* ---------- decisiones bienestar ---------- */
+let decCount=0;const decTotal=$$('.msg[data-dec]').length;
+$$('.msg[data-dec]').forEach(m=>{
+  const res=m.querySelector('.result');
+  m.querySelectorAll('.btn').forEach(b=>b.onclick=()=>{
+    if(m.dataset.done)return;m.dataset.done='1';decCount++;
+    const good=b.dataset.good==='1';
+    res.classList.add('show');res.style.color=good?'var(--good)':'var(--warn)';
+    res.innerHTML=good?'✅ Gran elección. Proteges tu bienestar y el de los demás, y sabes pedir ayuda.':
+      '⚠️ Esa opción te expone o no ayuda. Lo seguro: no participar en el daño, cortar el contacto y avisar a un adulto de confianza.';
+    addPts(good?10:3);
+    if(decCount===decTotal)grantBadge('well','Equilibrio digital');
+  });
+});
+
+/* ---------- TEST FINAL ---------- */
+const EXAM=[
+ {q:"Borras una publicación 10 minutos después de subirla. ¿Qué es más probable?",o:["Desaparece por completo de internet","Alguien pudo verla o guardarla: la huella puede quedar","Solo la ven tus mejores amigos"],c:1},
+ {q:"¿Cuál es una huella digital pasiva?",o:["Un comentario que escribes","Las cookies y tu ubicación registradas al navegar","Una foto que subes"],c:1},
+ {q:"Una app de fondos de pantalla pide tus contactos y micrófono. ¿Qué haces?",o:["Aceptar, será necesario","Denegar permisos innecesarios o buscar otra app","Aceptar si tiene buenas reseñas"],c:1},
+ {q:"La mejor contraseña es...",o:["Tu fecha de nacimiento","'123456' porque es fácil de recordar","Una frase larga con mayúsculas, números y símbolos + 2FA"],c:2},
+ {q:"Recibes un correo urgente que pide tu contraseña con un enlace raro. Es...",o:["Phishing: no hagas clic ni des datos","Un aviso legítimo del banco","Spam inofensivo, ábrelo"],c:0},
+ {q:"Para no perder tus archivos ante un ransomware conviene...",o:["Guardar todo en el escritorio","Tener copias de seguridad (nube + disco externo)","No usar nunca el ordenador"],c:1},
+ {q:"Te chantajean con una imagen íntima (sextorsión). ¿Qué haces?",o:["Pagar para que no la difundan","No ceder, guardar pruebas, cortar contacto y avisar a un adulto/017","Enviar más fotos para calmarlo"],c:1},
+ {q:"Señal de dependencia tecnológica es...",o:["Usar el móvil para estudiar 20 minutos","Ansiedad sin el móvil y descuidar sueño, estudios o relaciones","Apagar el móvil por la noche"],c:1}
+];
+(function buildExam(){
+  const w=$('#examwrap');
+  EXAM.forEach((e,i)=>{
+    const d=document.createElement('div');d.className='q';d.dataset.ex='';
+    d.innerHTML='<div class="stem">'+(i+1)+'. '+e.q+'</div>'+
+      e.o.map((t,j)=>'<button class="opt" data-i="'+j+'">'+t+'</button>').join('')+'<div class="fb"></div>';
+    w.appendChild(d);
+    const opts=d.querySelectorAll('.opt');const fb=d.querySelector('.fb');
+    opts.forEach(o=>o.onclick=()=>{
+      if(d.dataset.answered)return;d.dataset.answered=(+o.dataset.i===e.c)?'ok':'no';
+      opts.forEach(x=>{if(+x.dataset.i===e.c)x.classList.add('correct');else x.classList.add('dim')});
+      if(+o.dataset.i!==e.c)o.classList.add('wrong');
+      fb.classList.add('show',d.dataset.answered==='ok'?'ok':'no');
+      fb.textContent=d.dataset.answered==='ok'?'✅ ¡Correcto!':'❌ La respuesta correcta está en verde.';
+      addPts(d.dataset.answered==='ok'?10:2);
+      if($$('#examwrap .q[data-ex]').every(x=>x.dataset.answered))finishExam();
+    });
+  });
+})();
+function finishExam(){
+  const got=$$('#examwrap .q[data-ex]').filter(x=>x.dataset.answered==='ok').length;
+  $('#examscore').textContent=got+'/8';
+  const box=$('#examresult');box.style.display='block';
+  const msg=$('#exammsg');
+  if(got>=7){msg.textContent='🏆 ¡Excelente! Eres un/a Experto/a en seguridad y bienestar digital.';grantBadge('exam','Experto certificado');}
+  else if(got>=5){msg.textContent='👍 Bien. Repasa los fallos y vuelve a intentarlo para el certificado.';}
+  else{msg.textContent='📚 Repasa las secciones y prueba de nuevo. ¡Tú puedes!';}
+  box.scrollIntoView({behavior:'smooth'});
+}
+
+render();
+privUpdate();
+</script>
+</body>
+</html>
