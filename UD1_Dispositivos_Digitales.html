@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dispositivos digitales · UD1 · Dixitalización 4º ESO</title>
+<style>
+:root{
+  --bg:#0b1020; --bg2:#111935; --panel:#161f3f; --panel2:#1d2950;
+  --ink:#eef2ff; --muted:#9fb0d8; --line:#2b3a6b;
+  --cyan:#22d3ee; --blue:#3b82f6; --violet:#8b5cf6; --green:#34d399;
+  --amber:#fbbf24; --pink:#f472b6; --red:#f87171;
+  --shadow:0 12px 40px rgba(0,0,0,.45);
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:radial-gradient(1200px 700px at 80% -10%,#1b2a5e 0%,transparent 55%),
+                       radial-gradient(1000px 600px at -10% 10%,#242046 0%,transparent 50%),var(--bg);
+  color:var(--ink); font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+a{color:var(--cyan)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+/* NAV */
+header.topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);
+  background:rgba(11,16,32,.82);border-bottom:1px solid var(--line)}
+.topbar .row{display:flex;align-items:center;gap:14px;padding:10px 0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.3px}
+.brand .dot{width:14px;height:14px;border-radius:4px;background:linear-gradient(135deg,var(--cyan),var(--violet));box-shadow:0 0 14px var(--cyan)}
+nav.menu{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+nav.menu a{color:var(--muted);text-decoration:none;font-size:.86rem;font-weight:600;
+  padding:6px 11px;border-radius:999px;border:1px solid transparent;transition:.2s;white-space:nowrap}
+nav.menu a:hover{color:var(--ink);border-color:var(--line);background:var(--panel)}
+
+/* HERO */
+.hero{padding:64px 0 34px;position:relative;overflow:hidden}
+.badge{display:inline-flex;gap:8px;align-items:center;font-size:.78rem;font-weight:700;letter-spacing:.5px;
+  color:var(--cyan);background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.35);
+  padding:6px 14px;border-radius:999px;text-transform:uppercase}
+.hero h1{font-size:clamp(2.1rem,5vw,3.6rem);line-height:1.05;margin:18px 0 10px;font-weight:900;letter-spacing:-1px}
+.hero h1 span{background:linear-gradient(120deg,var(--cyan),var(--violet) 60%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.lead{font-size:1.12rem;color:var(--muted);max-width:720px}
+.chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.chip{font-size:.82rem;font-weight:600;background:var(--panel);border:1px solid var(--line);
+  padding:8px 14px;border-radius:12px;color:var(--ink);display:flex;gap:8px;align-items:center}
+.chip b{color:var(--cyan)}
+
+/* CURRICULUM STRIP */
+.curr{margin-top:34px;background:linear-gradient(180deg,var(--panel),var(--bg2));
+  border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.curr h3{margin:0 0 6px;font-size:1rem;color:var(--amber);letter-spacing:.4px;text-transform:uppercase}
+.curr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:14px}
+.curr-card{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.curr-card .tag{font-size:.72rem;font-weight:800;color:var(--violet);letter-spacing:.5px}
+.curr-card p{margin:6px 0 0;font-size:.9rem;color:var(--muted)}
+
+/* SECTIONS */
+section{padding:52px 0;border-top:1px solid rgba(43,58,107,.5)}
+.sec-head{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.sec-num{font-size:.8rem;font-weight:800;color:var(--bg);background:linear-gradient(135deg,var(--cyan),var(--violet));
+  width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:0 0 auto}
+.sec-head h2{font-size:clamp(1.5rem,3.4vw,2.1rem);margin:0;font-weight:850;letter-spacing:-.5px}
+.sec-sub{color:var(--muted);max-width:760px;margin:0 0 26px;font-size:1.02rem}
+.pill-ca{display:inline-block;font-size:.7rem;font-weight:800;color:var(--green);
+  background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.4);padding:3px 9px;border-radius:999px;margin-left:6px}
+
+/* HARDWARE EXPLORER */
+.hw{display:grid;grid-template-columns:1.05fr 1fr;gap:22px;align-items:start}
+@media(max-width:860px){.hw{grid-template-columns:1fr}}
+.board{background:
+  linear-gradient(180deg,#0e2036,#0a1526);
+  border:1px solid var(--line);border-radius:var(--radius);padding:20px;position:relative;box-shadow:var(--shadow)}
+.board .title{font-size:.78rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:14px}
+.comp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.comp{cursor:pointer;border:1px solid var(--line);border-radius:12px;padding:12px 8px;text-align:center;
+  background:var(--panel);transition:.18s;user-select:none}
+.comp:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 22px rgba(34,211,238,.18)}
+.comp.active{border-color:var(--cyan);background:linear-gradient(180deg,rgba(34,211,238,.16),var(--panel));box-shadow:0 0 0 2px rgba(34,211,238,.35) inset}
+.comp .ic{font-size:1.7rem;line-height:1}
+.comp .nm{font-size:.78rem;font-weight:700;margin-top:6px}
+.comp .sub{font-size:.66rem;color:var(--muted)}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;min-height:340px}
+.detail h4{margin:0 0 4px;font-size:1.3rem;display:flex;align-items:center;gap:10px}
+.detail .role{font-size:.78rem;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.6px}
+.detail p{color:var(--muted);font-size:.96rem}
+.detail .facts{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.fact{display:flex;gap:10px;font-size:.9rem;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.fact b{color:var(--ink);min-width:96px}
+.analogy{margin-top:14px;font-size:.9rem;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.4);
+  border-radius:10px;padding:11px 13px;color:#d9ccff}
+.analogy b{color:var(--violet)}
+
+/* TABS */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tab{cursor:pointer;font-weight:700;font-size:.9rem;padding:9px 16px;border-radius:12px;border:1px solid var(--line);
+  background:var(--panel);color:var(--muted);transition:.18s}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--bg);background:linear-gradient(135deg,var(--cyan),var(--blue));border-color:transparent}
+.tabpane{display:none;animation:fade .35s ease}
+.tabpane.show{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.card h5{margin:0 0 6px;font-size:1.05rem}
+.card p,.card li{color:var(--muted);font-size:.92rem}
+.card ul{margin:8px 0 0;padding-left:18px}
+
+/* ACCORDION */
+.acc{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px;background:var(--panel)}
+.acc-h{cursor:pointer;padding:14px 16px;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.acc-h:hover{background:var(--panel2)}
+.acc-h .arw{transition:.25s;color:var(--cyan)}
+.acc.open .arw{transform:rotate(90deg)}
+.acc-b{max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 16px}
+.acc.open .acc-b{max-height:600px;padding:0 16px 16px}
+.acc-b p,.acc-b li{color:var(--muted);font-size:.92rem}
+
+/* NETWORK DIAGRAM */
+.net{background:linear-gradient(180deg,#0b1830,#0a1220);border:1px solid var(--line);border-radius:var(--radius);
+  padding:24px;box-shadow:var(--shadow)}
+.net-flow{display:flex;align-items:stretch;gap:0;justify-content:center;flex-wrap:wrap}
+.node{cursor:pointer;text-align:center;min-width:120px;padding:14px 10px;border-radius:14px;border:1px solid var(--line);
+  background:var(--panel);transition:.18s;position:relative}
+.node:hover{border-color:var(--cyan);transform:translateY(-3px)}
+.node.on{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(34,211,238,.4) inset}
+.node .ic{font-size:1.8rem}
+.node .nm{font-weight:700;font-size:.86rem;margin-top:4px}
+.node .sub{font-size:.68rem;color:var(--muted)}
+.link{display:grid;place-items:center;min-width:44px;color:var(--cyan);font-size:1.4rem;font-weight:800}
+.net-detail{margin-top:16px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px;min-height:90px}
+.net-detail p{margin:0;color:var(--muted);font-size:.94rem}
+
+/* IoT cards */
+.iot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.iot{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center;transition:.18s}
+.iot:hover{transform:translateY(-4px);border-color:var(--violet);box-shadow:0 10px 26px rgba(139,92,246,.2)}
+.iot .ic{font-size:2rem}
+.iot h5{margin:8px 0 4px;font-size:.98rem}
+.iot p{margin:0;font-size:.8rem;color:var(--muted)}
+
+/* TROUBLESHOOTER */
+.ts{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.ts-q{font-size:1.15rem;font-weight:800;margin-bottom:16px;min-height:30px}
+.ts-opts{display:flex;flex-direction:column;gap:10px}
+.ts-opt{cursor:pointer;text-align:left;padding:13px 16px;border-radius:12px;border:1px solid var(--line);
+  background:var(--bg);color:var(--ink);font-weight:600;font-size:.94rem;transition:.16s}
+.ts-opt:hover{border-color:var(--cyan);background:var(--panel2);transform:translateX(4px)}
+.ts-result{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.4);border-radius:12px;padding:16px;color:#d1fae5}
+.ts-result.warn{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.45);color:#fef3c7}
+.ts-steps{margin:8px 0 0;padding-left:20px}
+.ts-back{margin-top:14px;cursor:pointer;color:var(--cyan);font-weight:700;font-size:.9rem;background:none;border:none;padding:0}
+.ts-crumb{font-size:.78rem;color:var(--muted);margin-bottom:12px}
+
+/* CONVERTER */
+.conv{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:center}
+@media(max-width:620px){.conv{grid-template-columns:1fr}}
+.conv-in{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.conv-in label{font-size:.82rem;color:var(--muted);font-weight:600}
+.conv-in input,.conv-in select{width:100%;margin-top:8px;background:var(--bg);border:1px solid var(--line);
+  color:var(--ink);border-radius:10px;padding:11px 12px;font-size:1rem}
+.conv-out{background:linear-gradient(135deg,rgba(34,211,238,.12),rgba(139,92,246,.12));
+  border:1px solid var(--line);border-radius:14px;padding:18px;font-size:.95rem}
+.conv-out .big{font-size:1.6rem;font-weight:800;color:var(--cyan)}
+.conv-out div{margin:4px 0}
+
+/* QUIZ */
+.quiz{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+.quiz .qtxt{font-weight:800;font-size:1.08rem;margin-bottom:14px}
+.quiz .opts{display:grid;gap:10px}
+.qopt{cursor:pointer;text-align:left;padding:12px 15px;border-radius:11px;border:1px solid var(--line);
+  background:var(--bg);color:var(--ink);font-size:.94rem;font-weight:600;transition:.15s}
+.qopt:hover{border-color:var(--cyan)}
+.qopt.correct{border-color:var(--green);background:rgba(52,211,153,.16)}
+.qopt.wrong{border-color:var(--red);background:rgba(248,113,113,.16)}
+.qopt:disabled{cursor:default}
+.q-feedback{margin-top:14px;font-size:.9rem;padding:12px 14px;border-radius:10px;display:none}
+.q-feedback.show{display:block}
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:18px}
+.q-prog{font-size:.84rem;color:var(--muted)}
+.btn{cursor:pointer;font-weight:700;font-size:.92rem;padding:10px 20px;border-radius:11px;border:none;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));color:var(--bg);transition:.18s}
+.btn:hover{filter:brightness(1.1)}
+.btn:disabled{opacity:.4;cursor:default}
+.quiz-final{text-align:center;padding:20px}
+.quiz-final .score{font-size:3rem;font-weight:900;background:linear-gradient(120deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* GLOSSARY */
+.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.term{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.term b{color:var(--cyan)}
+.term p{margin:4px 0 0;font-size:.86rem;color:var(--muted)}
+
+/* SDA */
+.sda-hero{background:linear-gradient(135deg,rgba(139,92,246,.15),rgba(34,211,238,.10));border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}
+.sda-hero .q{font-size:1.18rem;font-weight:800;color:var(--ink);margin:10px 0}
+.sda-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:18px}
+.sda-box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.sda-box h5{margin:0 0 8px;color:var(--cyan);font-size:.9rem;text-transform:uppercase;letter-spacing:.4px}
+.sda-box p,.sda-box li{color:var(--muted);font-size:.9rem}
+.sda-box ul{margin:6px 0 0;padding-left:18px}
+.roles{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.role-badge{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 13px;font-size:.82rem;font-weight:600}
+.prod{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:10px}
+.prod-item{background:var(--bg);border:1px solid var(--line);border-left:3px solid var(--cyan);border-radius:10px;padding:12px 14px;font-size:.87rem;color:var(--muted)}
+.prod-item b{color:var(--ink)}
+/* TIMELINE */
+.tl{display:flex;flex-direction:column;gap:10px}
+.ses{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ses-h{cursor:pointer;display:flex;gap:14px;align-items:center;padding:13px 16px}
+.ses-h:hover{background:var(--panel2)}
+.ses-n{flex:0 0 auto;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-weight:800;color:var(--bg);background:linear-gradient(135deg,var(--cyan),var(--violet))}
+.ses-t{font-weight:700;font-size:.98rem}
+.ses-tag{font-size:.68rem;color:var(--muted);margin-left:auto;text-align:right;min-width:70px}
+.ses-b{max-height:0;overflow:hidden;transition:max-height .35s ease;padding:0 16px}
+.ses.open .ses-b{max-height:520px;padding:0 16px 14px}
+.ses-b p,.ses-b li{color:var(--muted);font-size:.88rem;margin:6px 0}
+.ses-b .lab{color:var(--cyan);font-weight:700;font-size:.74rem;text-transform:uppercase;letter-spacing:.4px}
+.phase{display:inline-block;font-size:.66rem;font-weight:800;padding:2px 8px;border-radius:999px;margin-left:8px}
+.ph-ini{background:rgba(251,191,36,.15);color:var(--amber)}
+.ph-des{background:rgba(59,130,246,.16);color:#93c5fd}
+.ph-fin{background:rgba(52,211,153,.15);color:var(--green)}
+/* RUBRIC */
+.rub-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.rtab{cursor:pointer;font-weight:700;font-size:.84rem;padding:9px 15px;border-radius:11px;border:1px solid var(--line);background:var(--panel);color:var(--muted);transition:.18s}
+.rtab:hover{color:var(--ink)}
+.rtab.active{color:var(--bg);background:linear-gradient(135deg,var(--green),var(--cyan));border-color:transparent}
+.rpane{display:none;animation:fade .35s ease}
+.rpane.show{display:block}
+.rub-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--line)}
+.rub-table{width:100%;border-collapse:collapse;font-size:.83rem;min-width:720px}
+.rub-table th,.rub-table td{border:1px solid var(--line);padding:11px 12px;vertical-align:top;text-align:left}
+.rub-table th{background:var(--panel2);color:var(--ink);font-size:.76rem;text-transform:uppercase;letter-spacing:.3px}
+.rub-table td{color:var(--muted)}
+.rub-table .dim{font-weight:700;color:var(--ink);background:var(--panel);min-width:150px}
+.rub-table .n1{border-top:3px solid #f87171}
+.rub-table .n2{border-top:3px solid var(--amber)}
+.rub-table .n3{border-top:3px solid #93c5fd}
+.rub-table .n4{border-top:3px solid var(--green)}
+.crit-desc{background:rgba(34,211,238,.08);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:.9rem;color:var(--muted)}
+.crit-desc b{color:var(--cyan)}
+.calif{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px}
+.calif-item{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+.calif-item .pc{font-size:1.7rem;font-weight:900;background:linear-gradient(120deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.calif-item p{margin:4px 0 0;font-size:.82rem;color:var(--muted)}
+
+/* FOOTER */
+footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--muted);font-size:.86rem;text-align:center}
+footer .src{max-width:760px;margin:12px auto 0;font-size:.78rem;opacity:.8}
+.kbd{font-family:monospace;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:.82rem;color:var(--cyan)}
+.hl{color:var(--amber);font-weight:700}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap row">
+    <div class="brand"><span class="dot"></span> Dixitalización · 4º ESO</div>
+    <nav class="menu">
+      <a href="#intro">Inicio</a>
+      <a href="#hardware">Hardware</a>
+      <a href="#so">Sistemas operativos</a>
+      <a href="#redes">Redes</a>
+      <a href="#iot">IoT</a>
+      <a href="#averias">Averías</a>
+      <a href="#eco">Sostenibilidad</a>
+      <a href="#quiz">Autoevaluación</a>
+      <a href="SdA_Dispositivos_Digitales.html">Situación de aprendizaje ↗</a>
+      <a href="simulador-red.html">Simulador NetLab ↗</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="intro" style="border-top:none">
+  <div class="wrap">
+    <span class="badge">◆ Unidad 1 · Bloque 1</span>
+    <h1>Dispositivos <span>digitales</span></h1>
+    <p class="lead">Arquitectura y componentes del hardware, instalación y configuración de sistemas operativos, comunicación entre dispositivos en redes locales y en Internet, y la Internet de las cosas. Todo lo que hace que una máquina "encienda, funcione y se conecte".</p>
+    <div class="chips">
+      <div class="chip"><b>OBX1</b> Resolver problemas técnicos y configurar dispositivos</div>
+      <div class="chip"><b>CA1.1</b> Conectar dispositivos y gestionar redes</div>
+      <div class="chip"><b>CA1.2</b> Instalar y mantener sistemas operativos</div>
+      <div class="chip"><b>CA1.3</b> Identificar y resolver averías</div>
+    </div>
+
+    <div class="curr">
+      <h3>◈ ¿Qué dice el currículo?</h3>
+      <p style="color:var(--muted);margin:0;font-size:.94rem">Esta unidad desarrolla el <b style="color:var(--ink)">Bloque 1 «Dispositivos dixitais, sistemas operativos e de comunicación»</b> de la materia de Dixitalización (4º ESO, LOMLOE). Parte del conocimiento del hardware, avanza hacia la instalación del software de base y culmina en la comunicación entre dispositivos y el IoT.</p>
+      <div class="curr-grid">
+        <div class="curr-card"><span class="tag">CONTENIDO</span><p>Arquitectura de ordenadores: elementos, montaje, configuración y resolución de problemas sencillos.</p></div>
+        <div class="curr-card"><span class="tag">CONTENIDO</span><p>Sistemas operativos: instalación, configuración de usuario y organización/almacenamiento de la información.</p></div>
+        <div class="curr-card"><span class="tag">CONTENIDO</span><p>Sistemas de comunicación e Internet: dispositivos de red y configuración de una red doméstica.</p></div>
+        <div class="curr-card"><span class="tag">CONTENIDO</span><p>Dispositivos conectados (IoT + wearables): configuración y conexión.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HARDWARE -->
+<section id="hardware">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">01</div><h2>Hardware: la arquitectura por dentro <span class="pill-ca">CA1.3</span></h2></div>
+    <p class="sec-sub">El <b>hardware</b> es todo lo físico: lo que puedes tocar. Un ordenador es un sistema que <b>recibe datos</b> (entrada), los <b>procesa</b>, los <b>almacena</b> y devuelve un resultado (salida). Haz clic en cada componente para descubrir qué hace y por qué importa cuando algo falla.</p>
+
+    <div class="hw">
+      <div class="board">
+        <div class="title">🖥️ Placa base — haz clic en un componente</div>
+        <div class="comp-grid" id="compGrid">
+          <div class="comp active" data-k="cpu"><div class="ic">🧠</div><div class="nm">CPU</div><div class="sub">Procesador</div></div>
+          <div class="comp" data-k="ram"><div class="ic">⚡</div><div class="nm">RAM</div><div class="sub">Memoria</div></div>
+          <div class="comp" data-k="ssd"><div class="ic">💾</div><div class="nm">SSD/HDD</div><div class="sub">Almacenam.</div></div>
+          <div class="comp" data-k="gpu"><div class="ic">🎮</div><div class="nm">GPU</div><div class="sub">Gráfica</div></div>
+          <div class="comp" data-k="mb"><div class="ic">🔲</div><div class="nm">Placa base</div><div class="sub">Conexión</div></div>
+          <div class="comp" data-k="psu"><div class="ic">🔌</div><div class="nm">Fuente</div><div class="sub">Energía</div></div>
+          <div class="comp" data-k="cool"><div class="ic">🌀</div><div class="nm">Refrig.</div><div class="sub">Ventilación</div></div>
+          <div class="comp" data-k="io"><div class="ic">🔗</div><div class="nm">Puertos</div><div class="sub">E/S</div></div>
+          <div class="comp" data-k="periph"><div class="ic">⌨️</div><div class="nm">Periféricos</div><div class="sub">E/S externa</div></div>
+        </div>
+        <p style="font-size:.78rem;color:var(--muted);margin-top:14px">💡 <b>Entrada</b> (teclado, ratón, micro) → <b>Proceso</b> (CPU + RAM) → <b>Almacenamiento</b> (SSD) → <b>Salida</b> (monitor, altavoces). Es el modelo básico de todo dispositivo digital, también de un móvil.</p>
+      </div>
+
+      <div class="detail" id="compDetail"><!-- JS fills --></div>
+    </div>
+  </div>
+</section>
+
+<!-- SISTEMAS OPERATIVOS -->
+<section id="so">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">02</div><h2>Sistemas operativos: el software que manda <span class="pill-ca">CA1.2</span></h2></div>
+    <p class="sec-sub">El <b>sistema operativo (SO)</b> es el programa principal que arranca al encender: gestiona el hardware, ejecuta las aplicaciones y te ofrece una interfaz. Sin SO, un ordenador es solo metal y silicio.</p>
+
+    <div class="tabs" id="soTabs">
+      <div class="tab active" data-t="que">¿Qué es y qué hace?</div>
+      <div class="tab" data-t="tipos">Tipos de SO</div>
+      <div class="tab" data-t="instalar">Instalación</div>
+      <div class="tab" data-t="config">Configuración y archivos</div>
+    </div>
+
+    <div class="tabpane show" data-p="que">
+      <div class="grid2">
+        <div class="card"><h5>🧩 Funciones del SO</h5><ul>
+          <li><b>Gestión del hardware</b>: coordina CPU, memoria, discos y periféricos mediante <i>controladores (drivers)</i>.</li>
+          <li><b>Gestión de procesos</b>: decide qué programa usa la CPU y cuándo (multitarea).</li>
+          <li><b>Gestión de memoria</b>: reparte la RAM entre las apps abiertas.</li>
+          <li><b>Sistema de archivos</b>: organiza los datos en carpetas y ficheros.</li>
+          <li><b>Interfaz de usuario</b>: escritorio, ventanas y menús (GUI) o línea de comandos (CLI).</li>
+          <li><b>Seguridad</b>: usuarios, permisos y contraseñas.</li>
+        </ul></div>
+        <div class="card"><h5>🔍 ¿Dónde vive el SO?</h5>
+          <p>Cuando pulsas el botón de encendido, la placa base ejecuta la <b>BIOS/UEFI</b>, un pequeño programa grabado en un chip. Este comprueba el hardware (POST) y luego busca el SO en el disco y lo carga en la RAM. A ese proceso se le llama <b>arranque (boot)</b>.</p>
+          <p style="margin-top:10px">Un mismo equipo puede tener <b>varios SO</b> (arranque dual) y elegir cuál usar al encender.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabpane" data-p="tipos">
+      <div class="grid2">
+        <div class="card"><h5>💻 Ordenadores de escritorio y portátiles</h5><ul>
+          <li><b>Windows</b> — el más extendido en aulas y hogares. Propietario.</li>
+          <li><b>macOS</b> — exclusivo de equipos Apple. Propietario.</li>
+          <li><b>GNU/Linux</b> — libre y gratuito (Ubuntu, Debian, Mint…). Muy usado en servidores y educación.</li>
+        </ul></div>
+        <div class="card"><h5>📱 Dispositivos móviles</h5><ul>
+          <li><b>Android</b> — basado en Linux, código abierto, de Google.</li>
+          <li><b>iOS / iPadOS</b> — de Apple, propietario.</li>
+        </ul>
+        <p style="margin-top:8px"><span class="hl">Libre vs. propietario:</span> el software <b>libre</b> permite usarlo, estudiarlo, copiarlo y modificarlo; el <b>propietario</b> restringe estos derechos con una licencia.</p></div>
+      </div>
+    </div>
+
+    <div class="tabpane" data-p="instalar">
+      <div class="acc open"><div class="acc-h">1 · Preparar el medio de instalación <span class="arw">▶</span></div>
+        <div class="acc-b"><p>Se descarga la <b>imagen ISO</b> del SO desde la web oficial y se crea un <b>USB de arranque</b> (booteable). Antes: hacer copia de seguridad de tus datos.</p></div></div>
+      <div class="acc"><div class="acc-h">2 · Configurar el arranque en la UEFI/BIOS <span class="arw">▶</span></div>
+        <div class="acc-b"><p>Al encender se pulsa una tecla (F2, F12, Supr…) para entrar en la <b>UEFI</b> y elegir arrancar desde el USB en lugar del disco.</p></div></div>
+      <div class="acc"><div class="acc-h">3 · Particionar y copiar el sistema <span class="arw">▶</span></div>
+        <div class="acc-b"><p>El instalador prepara el disco (<b>particiones</b>) y copia los archivos del SO. Aquí se decide si se conserva otro SO (arranque dual).</p></div></div>
+      <div class="acc"><div class="acc-h">4 · Configuración inicial de usuario <span class="arw">▶</span></div>
+        <div class="acc-b"><p>Idioma, zona horaria, teclado, nombre de usuario y <b>contraseña</b>, y conexión a la red. El SO instala los <b>drivers</b> básicos.</p></div></div>
+      <div class="acc"><div class="acc-h">5 · Actualizar y añadir software <span class="arw">▶</span></div>
+        <div class="acc-b"><p>Primer paso tras instalar: <b>actualizaciones</b> de seguridad. Después se instalan las aplicaciones de uso habitual (ofimática, navegador, editores…).</p></div></div>
+    </div>
+
+    <div class="tabpane" data-p="config">
+      <div class="grid2">
+        <div class="card"><h5>⚙️ Configuración de usuario</h5><ul>
+          <li><b>Cuentas y perfiles</b>: cada persona con su usuario y permisos.</li>
+          <li><b>Personalización</b>: fondo, resolución, accesibilidad (tamaño de texto, contraste, lector de pantalla).</li>
+          <li><b>Actualizaciones automáticas</b> y copias de seguridad.</li>
+          <li><b>Gestión de aplicaciones</b>: instalar, actualizar y desinstalar.</li>
+        </ul></div>
+        <div class="card"><h5>🗂️ Organización y almacenamiento</h5><ul>
+          <li><b>Jerarquía de carpetas</b>: una estructura lógica (por asignatura, por proyecto…) ahorra tiempo.</li>
+          <li><b>Nombres consistentes</b>: <span class="kbd">2026-09_apuntes_redes.pdf</span> se ordena solo.</li>
+          <li><b>Extensiones</b>: <span class="kbd">.pdf .jpg .mp4 .docx</span> indican el tipo de archivo.</li>
+          <li><b>Local vs. nube</b>: la nube facilita el acceso y la copia de seguridad; lo local no depende de Internet.</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BINARIO / UNIDADES -->
+<section id="datos">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">03</div><h2>Cómo mide un ordenador la información</h2></div>
+    <p class="sec-sub">Toda la información digital se reduce a <b>bits</b> (0 y 1). 8 bits forman un <b>byte</b>. A partir de ahí se construyen las unidades que ves al comprar un móvil o un disco. Prueba la calculadora:</p>
+    <div class="conv">
+      <div class="conv-in">
+        <label>Cantidad</label>
+        <input id="convVal" type="number" value="16" min="0" step="any">
+        <label style="margin-top:12px;display:block">Unidad</label>
+        <select id="convUnit">
+          <option value="1">Bytes (B)</option>
+          <option value="1024">Kilobytes (KB)</option>
+          <option value="1048576" selected>Megabytes (MB)</option>
+          <option value="1073741824">Gigabytes (GB)</option>
+          <option value="1099511627776">Terabytes (TB)</option>
+        </select>
+      </div>
+      <div class="conv-out" id="convOut"></div>
+    </div>
+    <p style="font-size:.8rem;color:var(--muted);margin-top:12px">📏 Se usa el factor <b>1024</b> (2¹⁰), la convención binaria habitual en sistemas operativos. Comercialmente a veces se usa 1000; por eso un disco "de 500 GB" muestra algo menos en el SO.</p>
+  </div>
+</section>
+
+<!-- REDES -->
+<section id="redes">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">04</div><h2>Redes: conectar dispositivos <span class="pill-ca">CA1.1</span></h2></div>
+    <p class="sec-sub">Una <b>red</b> es un conjunto de dispositivos que comparten datos. Cuando abres una web, tu petición viaja por varios "nodos" hasta el servidor y vuelve. Recorre el camino haciendo clic en cada elemento.</p>
+
+    <div class="net">
+      <div class="net-flow">
+        <div class="node on" data-n="disp"><div class="ic">💻</div><div class="nm">Tu dispositivo</div><div class="sub">Cliente</div></div>
+        <div class="link">→</div>
+        <div class="node" data-n="wifi"><div class="ic">📶</div><div class="nm">Wi-Fi / cable</div><div class="sub">Con o sin fíos</div></div>
+        <div class="link">→</div>
+        <div class="node" data-n="router"><div class="ic">📡</div><div class="nm">Router</div><div class="sub">Puerta de enlace</div></div>
+        <div class="link">→</div>
+        <div class="node" data-n="isp"><div class="ic">🏢</div><div class="nm">Proveedor</div><div class="sub">ISP</div></div>
+        <div class="link">→</div>
+        <div class="node" data-n="server"><div class="ic">🗄️</div><div class="nm">Servidor</div><div class="sub">La web</div></div>
+      </div>
+      <div class="net-detail" id="netDetail"></div>
+    </div>
+
+    <div class="grid2" style="margin-top:20px">
+      <div class="card"><h5>🔌 Dispositivos de red</h5><ul>
+        <li><b>Router</b>: dirige el tráfico entre tu red local e Internet; es la puerta de enlace.</li>
+        <li><b>Switch</b>: conecta varios equipos dentro de la red local por cable.</li>
+        <li><b>Punto de acceso (AP)</b>: da cobertura Wi-Fi.</li>
+        <li><b>Tarjeta de red</b>: en cada dispositivo, permite conectarse (Ethernet o Wi-Fi).</li>
+      </ul></div>
+      <div class="card"><h5>🏷️ Direcciones e identificadores</h5><ul>
+        <li><b>IP</b>: la "dirección postal" de cada dispositivo en la red (ej. <span class="kbd">192.168.1.10</span>).</li>
+        <li><b>MAC</b>: identificador físico único de cada tarjeta de red.</li>
+        <li><b>SSID</b>: el nombre de tu red Wi-Fi.</li>
+        <li><b>DNS</b>: traduce nombres (<i>www.edu.xunta.gal</i>) a direcciones IP.</li>
+      </ul></div>
+    </div>
+
+    <div class="card" style="margin-top:16px"><h5>🛠️ Configurar una red doméstica — pasos clave</h5>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px">
+        <div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px"><b style="color:var(--cyan)">1</b> Conectar el router y encenderlo.</div>
+        <div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px"><b style="color:var(--cyan)">2</b> Acceder al panel del router por el navegador.</div>
+        <div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px"><b style="color:var(--cyan)">3</b> Cambiar el <b>nombre (SSID)</b> y la <b>contraseña</b> Wi-Fi.</div>
+        <div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px"><b style="color:var(--cyan)">4</b> Elegir cifrado <b>WPA2/WPA3</b>.</div>
+        <div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px"><b style="color:var(--cyan)">5</b> Conectar dispositivos y comprobar la conexión.</div>
+      </div>
+      <p style="margin-top:12px;font-size:.85rem">📡 <b>Con fíos (Ethernet)</b>: más estable y rápida, ideal fija. <b>Sin fíos (Wi-Fi)</b>: cómoda y móvil, pero sensible a distancia e interferencias.</p>
+    </div>
+  </div>
+</section>
+
+<!-- IoT -->
+<section id="iot">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">05</div><h2>Internet de las cosas (IoT) y wearables</h2></div>
+    <p class="sec-sub">El <b>IoT</b> conecta a Internet objetos cotidianos que antes no lo estaban: recogen datos con sensores, los envían a la red y actúan según lo que reciben. Los <b>wearables</b> son IoT que llevamos puesto.</p>
+    <div class="iot-grid">
+      <div class="iot"><div class="ic">⌚</div><h5>Smartwatch</h5><p>Mide pulso, pasos y sueño; avisa de notificaciones.</p></div>
+      <div class="iot"><div class="ic">💡</div><h5>Bombilla smart</h5><p>Se enciende y regula desde el móvil o por voz.</p></div>
+      <div class="iot"><div class="ic">🔊</div><h5>Altavoz de voz</h5><p>Asistente que responde y controla otros dispositivos.</p></div>
+      <div class="iot"><div class="ic">🌡️</div><h5>Termostato</h5><p>Ajusta la calefacción según hábitos y ahorra energía.</p></div>
+      <div class="iot"><div class="ic">📷</div><h5>Cámara / timbre</h5><p>Vigilancia y aviso al móvil en tiempo real.</p></div>
+      <div class="iot"><div class="ic">🚗</div><h5>Coche conectado</h5><p>Navegación, diagnóstico y actualizaciones OTA.</p></div>
+    </div>
+    <div class="grid2" style="margin-top:18px">
+      <div class="card"><h5>🔗 Cómo se conecta un dispositivo IoT</h5><ul>
+        <li>Se instala la <b>app</b> del fabricante.</li>
+        <li>El dispositivo crea una red temporal o usa <b>Bluetooth</b> para el emparejamiento.</li>
+        <li>Se le da acceso a tu <b>Wi-Fi</b> y se vincula a tu cuenta.</li>
+        <li>Se configuran permisos, automatizaciones y actualizaciones.</li>
+      </ul></div>
+      <div class="card"><h5>⚠️ Lo que hay que vigilar</h5><ul>
+        <li><b>Privacidad</b>: recogen muchos datos personales (ubicación, salud, audio).</li>
+        <li><b>Seguridad</b>: cambia siempre la contraseña por defecto y actualiza el firmware.</li>
+        <li><b>Dependencia</b>: si falla la nube del fabricante, el dispositivo puede dejar de funcionar.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- TROUBLESHOOTER -->
+<section id="averias">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">06</div><h2>Diagnóstico de averías <span class="pill-ca">CA1.3</span></h2></div>
+    <p class="sec-sub">Resolver un problema técnico es un método: <b>observar → aislar la causa → probar una solución → verificar</b>. Simula una avería frecuente y sigue el árbol de decisiones como haría un técnico.</p>
+    <div class="ts" id="ts">
+      <div class="ts-crumb" id="tsCrumb">Escenario inicial</div>
+      <div class="ts-q" id="tsQ"></div>
+      <div class="ts-opts" id="tsOpts"></div>
+      <button class="ts-back" id="tsBack" style="display:none">↺ Empezar de nuevo</button>
+    </div>
+  </div>
+</section>
+
+<!-- SOSTENIBILIDAD -->
+<section id="eco">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">07</div><h2>Uso responsable: reutilización y ahorro energético</h2></div>
+    <p class="sec-sub">El currículo pide crear <b>hábitos de reutilización de materiales y ahorro energético</b>. La tecnología tiene un coste ambiental: fabricar, alimentar y desechar dispositivos.</p>
+    <div class="grid2">
+      <div class="card"><h5>♻️ Alargar la vida útil</h5><ul>
+        <li>Ampliar RAM o cambiar a SSD revive equipos "lentos".</li>
+        <li>Instalar un SO ligero (Linux) en máquinas antiguas.</li>
+        <li>Reparar antes que sustituir; donar o reciclar en puntos limpios (<b>RAEE</b>).</li>
+      </ul></div>
+      <div class="card"><h5>🔋 Reducir el consumo</h5><ul>
+        <li>Modos de <b>ahorro de energía</b> y suspensión.</li>
+        <li>Apagar en lugar de dejar en espera prolongada.</li>
+        <li>Brillo, cierre de apps en segundo plano y desconexión de periféricos.</li>
+        <li>Cuidado con la <b>obsolescencia programada</b>: elige productos reparables.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">08</div><h2>Autoevaluación</h2></div>
+    <p class="sec-sub">Comprueba lo aprendido. Cada pregunta te explica la respuesta correcta. No cuenta para nota: es para saber dónde reforzar.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+</section>
+
+<!-- GLOSARIO -->
+<section id="glosario">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">09</div><h2>Glosario rápido</h2></div>
+    <div class="gloss">
+      <div class="term"><b>Hardware</b><p>Componentes físicos de un dispositivo.</p></div>
+      <div class="term"><b>Software</b><p>Programas y datos; las instrucciones que ejecuta el hardware.</p></div>
+      <div class="term"><b>CPU</b><p>Unidad central de proceso; ejecuta las instrucciones.</p></div>
+      <div class="term"><b>RAM</b><p>Memoria temporal y rápida donde trabaja el equipo.</p></div>
+      <div class="term"><b>SSD / HDD</b><p>Almacenamiento permanente de datos.</p></div>
+      <div class="term"><b>Sistema operativo</b><p>Software base que gestiona el hardware y las apps.</p></div>
+      <div class="term"><b>Driver</b><p>Programa que permite al SO comunicarse con un componente.</p></div>
+      <div class="term"><b>UEFI/BIOS</b><p>Firmware que arranca el equipo antes del SO.</p></div>
+      <div class="term"><b>Router</b><p>Dispositivo que conecta tu red con Internet.</p></div>
+      <div class="term"><b>IP</b><p>Dirección de un dispositivo dentro de una red.</p></div>
+      <div class="term"><b>SSID</b><p>Nombre de una red Wi-Fi.</p></div>
+      <div class="term"><b>IoT</b><p>Objetos cotidianos conectados a Internet.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div><b>Unidad Didáctica 1 · Dispositivos digitales</b> — Materia de Dixitalización · 4º ESO (LOMLOE)</div>
+    <div class="src">Contenidos alineados con el Bloque 1 «Dispositivos dixitais, sistemas operativos e de comunicación» del currículo oficial de la materia (objetivo OBX1; criterios de evaluación CA1.1, CA1.2 y CA1.3). Recurso de aula de elaboración propia. Verificado con el documento curricular aportado.</div>
+    <div style="margin-top:16px;font-size:.82rem;color:var(--ink)"><b>Creado por Susana Oubiña Falcón y Claude (Opus 4.8)</b></div>
+    <div class="src" style="margin-top:2px">Material educativo para la materia de Digitalización · 4.º ESO</div>
+  </div>
+</footer>
+
+<script>
+/* ---------- HARDWARE EXPLORER ---------- */
+const COMP={
+  cpu:{ic:"🧠",nm:"CPU · Procesador",role:"El cerebro",desc:"Ejecuta las instrucciones de los programas: realiza millones de operaciones por segundo. Su velocidad se mide en GHz y hoy tiene varios <b>núcleos</b> para hacer varias tareas a la vez.",
+    facts:[["Mide","GHz y nº de núcleos"],["Marca ej.","Intel, AMD, Apple, ARM"],["Si falla","el equipo no arranca o se apaga"]],
+    an:"Es como el chef de una cocina: recibe los pedidos y decide qué se cocina y en qué orden."},
+  ram:{ic:"⚡",nm:"RAM · Memoria",role:"El escritorio de trabajo",desc:"Memoria <b>temporal y muy rápida</b> donde el equipo guarda lo que está usando ahora mismo. Al apagar, se borra. Más RAM = más apps abiertas sin ir lento.",
+    facts:[["Mide","GB (8, 16, 32…)"],["Volátil","sí, se borra al apagar"],["Si es poca","el equipo va lento con varias apps"]],
+    an:"Es la mesa de trabajo: cuanto más grande, más papeles (programas) tienes abiertos a la vez sin agobiarte."},
+  ssd:{ic:"💾",nm:"SSD / HDD · Almacenamiento",role:"La memoria permanente",desc:"Guarda tus archivos y el SO <b>de forma permanente</b>, aunque apagues. El <b>SSD</b> es mucho más rápido que el disco duro <b>HDD</b> tradicional.",
+    facts:[["Mide","GB / TB"],["Volátil","no, conserva los datos"],["SSD vs HDD","SSD sin piezas móviles, más veloz"]],
+    an:"Es el archivador de la oficina: guardas los documentos ahí y siguen estando mañana."},
+  gpu:{ic:"🎮",nm:"GPU · Tarjeta gráfica",role:"El artista visual",desc:"Procesa las imágenes y el vídeo. Imprescindible en juegos, edición y también en <b>inteligencia artificial</b>. Puede ir integrada en la CPU o ser una tarjeta aparte.",
+    facts:[["Función","calcular gráficos"],["Uso extra","IA, edición de vídeo"],["Integrada/dedicada","según potencia"]],
+    an:"Es el equipo de diseño gráfico: se encarga de que todo se vea, y rápido."},
+  mb:{ic:"🔲",nm:"Placa base",role:"El sistema nervioso",desc:"La gran placa donde <b>se conecta todo</b>: CPU, RAM, almacenamiento, tarjetas y puertos. Comunica los componentes entre sí y con el exterior.",
+    facts:[["Función","interconectar componentes"],["Incluye","chipset, ranuras, puertos"],["Si falla","puede afectar a todo el equipo"]],
+    an:"Es la red de carreteras de una ciudad: conecta todos los barrios (componentes) entre sí."},
+  psu:{ic:"🔌",nm:"Fuente de alimentación",role:"La central eléctrica",desc:"Transforma la corriente del enchufe en la que necesita cada componente. Una fuente insuficiente o defectuosa provoca apagones y reinicios.",
+    facts:[["Mide","vatios (W)"],["Función","suministrar energía estable"],["Si falla","el equipo no enciende o se apaga"]],
+    an:"Es el transformador del barrio: da a cada casa (componente) la electricidad justa que necesita."},
+  cool:{ic:"🌀",nm:"Refrigeración",role:"El aire acondicionado",desc:"Ventiladores y disipadores que evitan que los componentes se <b>sobrecalienten</b>. El calor excesivo hace que el equipo vaya lento (throttling) o se apague.",
+    facts:[["Tipos","aire o líquida"],["Vigila","polvo acumulado"],["Si falla","sobrecalentamiento y cierres"]],
+    an:"Es el aire acondicionado: mantiene la temperatura para que todo funcione sin fundirse."},
+  io:{ic:"🔗",nm:"Puertos de E/S",role:"Las puertas",desc:"Conectores para el mundo exterior: <b>USB, HDMI, jack de audio, Ethernet…</b> Por ellos entran y salen datos y se conectan periféricos.",
+    facts:[["Ejemplos","USB, HDMI, Ethernet"],["E/S","entrada y salida"],["USB-C","datos, vídeo y carga"]],
+    an:"Son las puertas y ventanas de la casa: por donde entra y sale todo lo que viene de fuera."},
+  periph:{ic:"⌨️",nm:"Periféricos",role:"Los sentidos y la voz",desc:"Dispositivos externos. De <b>entrada</b> (teclado, ratón, micro, webcam, escáner), de <b>salida</b> (monitor, altavoces, impresora) o mixtos (pantalla táctil, auriculares con micro).",
+    facts:[["Entrada","teclado, ratón, micro"],["Salida","monitor, altavoz, impresora"],["Mixtos","táctil, auriculares"]],
+    an:"Son los sentidos del ordenador: los ojos y oídos (entrada) y la voz y gestos (salida)."}
+};
+const grid=document.getElementById('compGrid'), det=document.getElementById('compDetail');
+function renderComp(k){
+  const c=COMP[k];
+  det.innerHTML=`<div class="role">${c.role}</div><h4>${c.ic} ${c.nm}</h4>
+    <p>${c.desc}</p>
+    <div class="facts">${c.facts.map(f=>`<div class="fact"><b>${f[0]}</b><span>${f[1]}</span></div>`).join('')}</div>
+    <div class="analogy"><b>🔎 Analogía:</b> ${c.an}</div>`;
+}
+grid.querySelectorAll('.comp').forEach(el=>el.addEventListener('click',()=>{
+  grid.querySelectorAll('.comp').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active'); renderComp(el.dataset.k);
+}));
+renderComp('cpu');
+
+/* ---------- TABS ---------- */
+document.querySelectorAll('#soTabs .tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('#soTabs .tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.querySelectorAll('[data-p]').forEach(p=>p.classList.remove('show'));
+  document.querySelector(`[data-p="${t.dataset.t}"]`).classList.add('show');
+}));
+
+/* ---------- ACCORDION ---------- */
+document.querySelectorAll('.acc-h').forEach(h=>h.addEventListener('click',()=>{
+  h.parentElement.classList.toggle('open');
+}));
+
+/* ---------- CONVERTER ---------- */
+const cv=document.getElementById('convVal'),cu=document.getElementById('convUnit'),co=document.getElementById('convOut');
+function fmt(n){ if(n<0.001&&n>0)return n.toExponential(2); return n.toLocaleString('es-ES',{maximumFractionDigits:3}); }
+function conv(){
+  const bytes=(parseFloat(cv.value)||0)*parseFloat(cu.value);
+  const bits=bytes*8;
+  co.innerHTML=`<div class="big">${fmt(bytes)} B</div>
+    <div>= ${fmt(bits)} bits</div>
+    <div>= ${fmt(bytes/1024)} KB</div>
+    <div>= ${fmt(bytes/1048576)} MB</div>
+    <div>= ${fmt(bytes/1073741824)} GB</div>
+    <div style="margin-top:8px;font-size:.82rem;color:var(--muted)">💡 Ej.: una foto ≈ 3 MB · una canción ≈ 5 MB · una película HD ≈ 4 GB</div>`;
+}
+cv.addEventListener('input',conv); cu.addEventListener('change',conv); conv();
+
+/* ---------- NETWORK ---------- */
+const NET={
+  disp:"<b>Tu dispositivo (cliente).</b> El ordenador, móvil o tablet desde el que pides información. Tiene una tarjeta de red y una dirección IP dentro de tu red local.",
+  wifi:"<b>La conexión: con o sin fíos.</b> Por <b>cable Ethernet</b> (más estable y rápida) o por <b>Wi-Fi</b> (cómoda y móvil). Los datos salen de tu dispositivo hacia el router.",
+  router:"<b>El router.</b> La puerta de enlace entre tu red doméstica e Internet. Reparte la conexión, asigna direcciones IP locales y protege la red con su cortafuegos y contraseña.",
+  isp:"<b>El proveedor de Internet (ISP).</b> La empresa que te da acceso a Internet (fibra, cable…). Encamina tu petición por la red global hasta encontrar el servidor de destino.",
+  server:"<b>El servidor.</b> El ordenador remoto donde está alojada la web o el servicio. Recibe tu petición, prepara la respuesta y la envía de vuelta por el mismo camino."
+};
+const netDetail=document.getElementById('netDetail');
+function renderNet(n){ netDetail.innerHTML=`<p>${NET[n]}</p>`; }
+document.querySelectorAll('.node').forEach(nd=>nd.addEventListener('click',()=>{
+  document.querySelectorAll('.node').forEach(x=>x.classList.remove('on'));
+  nd.classList.add('on'); renderNet(nd.dataset.n);
+}));
+renderNet('disp');
+
+/* ---------- TROUBLESHOOTER (decision tree) ---------- */
+const TS={
+  start:{q:"⚠️ Escenario: pulsas el botón de encendido y <b>no ocurre nada</b>. Pantalla negra, sin luces, sin ventiladores. ¿Qué compruebas primero?",
+    opts:[
+      {t:"El cable de corriente y el enchufe",go:"power"},
+      {t:"Reinstalar el sistema operativo",go:"badSO"},
+      {t:"Cambiar la tarjeta gráfica",go:"badGPU"}]},
+  power:{q:"Bien pensado: siempre de lo simple a lo complejo. El enchufe funciona y el cable está bien conectado, pero <b>sigue sin encender</b>. ¿Siguiente paso?",
+    opts:[
+      {t:"Probar otra toma de corriente y el interruptor de la fuente",go:"psu"},
+      {t:"Formatear el disco duro",go:"badSO"}]},
+  psu:{q:"La toma funciona con otros aparatos y el interruptor de la fuente está en ON, pero <b>nada</b>. Ni una luz. La causa más probable es de energía interna. ¿Diagnóstico?",
+    result:{ok:true,txt:"✅ Diagnóstico correcto: fallo de <b>alimentación</b> (fuente o placa base). Es un problema de <i>hardware</i>, no de software.",
+      steps:["Revisar que la fuente esté bien conectada a la placa base.","Probar con otra fuente compatible si es posible.","Si con otra fuente enciende → era la fuente. Si no → sospechar de la placa base.","Documentar lo probado antes de sustituir piezas."]}},
+  badSO:{q:"",result:{ok:false,txt:"⚠️ Cuidado: reinstalar el SO o formatear no tiene sentido si el equipo <b>ni siquiera enciende</b>. Si no hay corriente, el software no interviene. Además, formatear borraría todos los datos sin resolver nada.",
+      steps:["Regla de oro: descarta primero lo físico y sencillo (corriente, cables).","No toques el software mientras el hardware no dé señales de vida.","Vuelve a empezar y sigue el método paso a paso."]}},
+  badGPU:{q:"",result:{ok:false,txt:"⚠️ Poco probable como primer paso: cambiar la gráfica es caro, invasivo y no explica que <b>no haya ni luces ni ventiladores</b>. Eso apunta a energía, no a gráficos.",
+      steps:["Aísla la causa antes de sustituir componentes.","Una gráfica averiada suele dar imagen negra pero con luces y ventiladores en marcha.","Vuelve a empezar por lo más simple."]}}
+};
+const tsQ=document.getElementById('tsQ'),tsOpts=document.getElementById('tsOpts'),tsBack=document.getElementById('tsBack'),tsCrumb=document.getElementById('tsCrumb');
+let tsDepth=0;
+function tsGo(key){
+  const node=TS[key];
+  if(node.result){
+    const r=node.result;
+    tsQ.innerHTML=node.q||"";
+    tsOpts.innerHTML=`<div class="ts-result ${r.ok?'':'warn'}">${r.txt}
+      <ol class="ts-steps">${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>`;
+    tsCrumb.textContent=r.ok?"✔ Resolución":"↺ Revisa el método";
+    tsBack.style.display='inline-block';
+  }else{
+    tsDepth++;
+    tsQ.innerHTML=node.q;
+    tsOpts.innerHTML='';
+    node.opts.forEach(o=>{
+      const b=document.createElement('button');b.className='ts-opt';b.innerHTML=o.t;
+      b.onclick=()=>tsGo(o.go); tsOpts.appendChild(b);
+    });
+    tsCrumb.textContent="Paso "+tsDepth+" · Observar → aislar → probar → verificar";
+    tsBack.style.display=(key==='start')?'none':'inline-block';
+  }
+}
+tsBack.onclick=()=>{tsDepth=0;tsGo('start');};
+tsGo('start');
+
+/* ---------- QUIZ ---------- */
+const QZ=[
+  {q:"¿Cuál de estos componentes pierde su contenido al apagar el equipo?",o:["El SSD","La RAM","El disco duro (HDD)","La placa base"],a:1,
+   e:"La <b>RAM</b> es memoria volátil: solo guarda datos mientras hay corriente. El SSD y el HDD conservan la información."},
+  {q:"¿Qué software es el primero en cargarse y gestiona todo el hardware?",o:["El navegador","El antivirus","El sistema operativo","El paquete ofimático"],a:2,
+   e:"El <b>sistema operativo</b> se carga al arrancar y gestiona hardware, procesos, memoria y archivos."},
+  {q:"En una red doméstica, ¿qué dispositivo actúa como puerta de enlace a Internet?",o:["El switch","El router","La tarjeta de red","El servidor DNS"],a:1,
+   e:"El <b>router</b> conecta tu red local con Internet y reparte la conexión a los dispositivos."},
+  {q:"¿Qué es una dirección IP?",o:["El nombre de tu red Wi-Fi","El identificador físico de la tarjeta de red","La dirección de un dispositivo en la red","El cifrado de la contraseña"],a:2,
+   e:"La <b>IP</b> identifica a un dispositivo dentro de una red. El nombre de la Wi-Fi es el SSID y el identificador físico es la MAC."},
+  {q:"Un ordenador no enciende: sin luces ni ventiladores. ¿Qué compruebas primero?",o:["Reinstalar el sistema operativo","La corriente: cable y enchufe","Cambiar la tarjeta gráfica","Formatear el disco"],a:1,
+   e:"Método de diagnóstico: de lo simple a lo complejo. Sin señales de vida, primero se revisa la <b>alimentación</b>."},
+  {q:"¿Qué caracteriza a un dispositivo IoT como un smartwatch?",o:["No necesita conexión","Recoge datos con sensores y los envía por la red","Solo funciona con cable","No guarda datos personales"],a:1,
+   e:"El <b>IoT</b> conecta objetos a Internet: recogen datos con sensores, los envían y actúan. Por eso hay que cuidar su privacidad y seguridad."},
+  {q:"¿Cuál es un buen hábito de uso sostenible del hardware?",o:["Comprar un equipo nuevo cada año","Dejar todo en espera permanente","Ampliar RAM o poner un SSD para alargar su vida","Subir siempre el brillo al máximo"],a:2,
+   e:"<b>Reutilizar y mejorar</b> (más RAM, SSD, SO ligero) alarga la vida útil y reduce residuos electrónicos (RAEE)."},
+  {q:"¿Qué cifrado debes elegir al configurar tu Wi-Fi doméstica?",o:["Ninguno, red abierta","WEP","WPA2 o WPA3","Solo ocultar el SSID"],a:2,
+   e:"<b>WPA2/WPA3</b> es el cifrado seguro actual. WEP es obsoleto y una red abierta es insegura."}
+];
+let qi=0,score=0,answered=false;
+const quiz=document.getElementById('quiz');
+function renderQ(){
+  answered=false;
+  const item=QZ[qi];
+  quiz.innerHTML=`<div class="q-prog">Pregunta ${qi+1} de ${QZ.length} · Aciertos: ${score}</div>
+    <div class="qtxt">${item.q}</div>
+    <div class="opts" id="opts">${item.o.map((op,i)=>`<button class="qopt" data-i="${i}">${op}</button>`).join('')}</div>
+    <div class="q-feedback" id="fb"></div>
+    <div class="q-nav"><span class="q-prog">Barra: ${'●'.repeat(qi)}${'○'.repeat(QZ.length-qi)}</span>
+      <button class="btn" id="nextBtn" disabled>${qi<QZ.length-1?'Siguiente →':'Ver resultado'}</button></div>`;
+  document.querySelectorAll('.qopt').forEach(b=>b.addEventListener('click',()=>pick(b)));
+  document.getElementById('nextBtn').addEventListener('click',next);
+}
+function pick(b){
+  if(answered)return; answered=true;
+  const item=QZ[qi], chosen=+b.dataset.i;
+  document.querySelectorAll('.qopt').forEach(x=>{
+    x.disabled=true;
+    if(+x.dataset.i===item.a)x.classList.add('correct');
+  });
+  const fb=document.getElementById('fb'); fb.classList.add('show');
+  if(chosen===item.a){score++;fb.style.background='rgba(52,211,153,.14)';fb.innerHTML='✅ <b>Correcto.</b> '+item.e;}
+  else{b.classList.add('wrong');fb.style.background='rgba(248,113,113,.14)';fb.innerHTML='❌ <b>No exactamente.</b> '+item.e;}
+  document.getElementById('nextBtn').disabled=false;
+  document.querySelector('.q-prog').textContent=`Pregunta ${qi+1} de ${QZ.length} · Aciertos: ${score}`;
+}
+function next(){ if(qi<QZ.length-1){qi++;renderQ();}else{finish();} }
+function finish(){
+  const pct=Math.round(score/QZ.length*100);
+  let msg = pct>=75?"¡Excelente! Dominas el Bloque 1.":pct>=50?"Bien, repasa las secciones donde fallaste.":"Vuelve a recorrer la infografía y reinténtalo.";
+  quiz.innerHTML=`<div class="quiz-final"><div class="score">${score}/${QZ.length}</div>
+    <p style="font-size:1.1rem;font-weight:700">${pct}% de aciertos</p>
+    <p style="color:var(--muted)">${msg}</p>
+    <button class="btn" id="again">↺ Repetir test</button></div>`;
+  document.getElementById('again').addEventListener('click',()=>{qi=0;score=0;renderQ();});
+}
+renderQ();
+
+/* ---------- SESSIONS ACCORDION ---------- */
+document.querySelectorAll('.ses-h').forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('open')));
+
+/* ---------- RUBRIC TABS ---------- */
+document.querySelectorAll('.rtab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.rtab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.querySelectorAll('.rpane').forEach(p=>p.classList.remove('show'));
+  document.getElementById('rp-'+t.dataset.r).classList.add('show');
+}));
+</script>
+</body>
+</html>

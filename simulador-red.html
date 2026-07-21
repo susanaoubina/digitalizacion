@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetLab · Simulador de Redes e Internet</title>
+<style>
+  :root{
+    --bg:#0f1424; --panel:#171d33; --panel2:#1e2540; --line:#2b3357;
+    --txt:#e8ecf7; --muted:#9aa4c7; --accent:#4f8cff; --accent2:#31d0aa;
+    --warn:#ffb454; --bad:#ff6b6b; --good:#31d0aa;
+    --lan:#4f8cff; --wlan:#a06bff; --wan:#ff8a4f;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);overflow:hidden}
+  button{font-family:inherit;cursor:pointer}
+  .app{display:flex;flex-direction:column;height:100vh}
+
+  /* ---------- TOP BAR ---------- */
+  header{display:flex;align-items:center;gap:14px;padding:10px 16px;background:linear-gradient(90deg,#141a30,#1b2242);border-bottom:1px solid var(--line)}
+  .logo{font-weight:800;font-size:20px;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
+  .logo .dot{width:12px;height:12px;border-radius:50%;background:var(--accent2);box-shadow:0 0 12px var(--accent2)}
+  .logo small{font-weight:500;color:var(--muted);font-size:12px;margin-left:4px}
+  header .spacer{flex:1}
+  .toolbtn{background:var(--panel2);color:var(--txt);border:1px solid var(--line);padding:8px 12px;border-radius:9px;font-size:13px;display:flex;align-items:center;gap:6px;transition:.15s}
+  .toolbtn:hover{border-color:var(--accent);background:#232b4d}
+  .toolbtn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .toolbtn.wifi.active{background:var(--wlan);border-color:var(--wlan)}
+  .toolbtn.send.active{background:var(--accent2);border-color:var(--accent2);color:#04231b}
+
+  /* ---------- LAYOUT ---------- */
+  .main{display:flex;flex:1;min-height:0}
+  aside{width:190px;background:var(--panel);border-right:1px solid var(--line);padding:12px;overflow-y:auto}
+  aside h3{margin:6px 4px 10px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+  .palette-item{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 10px;margin-bottom:9px;cursor:grab;transition:.15s;user-select:none}
+  .palette-item:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .palette-item .ico{font-size:22px;width:26px;text-align:center}
+  .palette-item .nm{font-size:13px;font-weight:600}
+  .palette-item .sub{font-size:10px;color:var(--muted)}
+
+  #stage{flex:1;position:relative;overflow:hidden;background:
+    radial-gradient(circle at 50% 0%,#1a2246,transparent),
+    radial-gradient(circle at 20% 30%,rgba(79,140,255,.06),transparent 40%),
+    linear-gradient(#0f1424,#0c1020);
+    background-color:#0c1020}
+  #stage .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:28px 28px}
+  svg#wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .node{position:absolute;width:78px;transform:translate(-50%,-50%);text-align:center;cursor:grab;user-select:none;z-index:2}
+  .node .box{width:64px;height:64px;margin:0 auto;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:30px;background:var(--panel2);border:2px solid var(--line);transition:.15s;position:relative}
+  .node.sel .box{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,140,255,.25)}
+  .node.linkpick .box{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(49,208,170,.3)}
+  .node .lbl{font-size:11px;margin-top:4px;font-weight:600;line-height:1.2}
+  .node .ipl{font-size:9px;color:var(--muted);font-family:monospace}
+  .node .badge{position:absolute;top:-8px;right:-8px;background:var(--wan);color:#3a1500;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px}
+
+  .packet{position:absolute;width:22px;height:22px;border-radius:6px;transform:translate(-50%,-50%);z-index:5;display:flex;align-items:center;justify-content:center;font-size:11px;box-shadow:0 0 14px currentColor;transition:left .01s,top .01s}
+
+  /* ---------- RIGHT PANEL ---------- */
+  .right{width:310px;background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column}
+  .tabs{display:flex;border-bottom:1px solid var(--line)}
+  .tabs button{flex:1;background:transparent;color:var(--muted);border:none;padding:11px 4px;font-size:12px;font-weight:600;border-bottom:2px solid transparent}
+  .tabs button.active{color:var(--txt);border-bottom-color:var(--accent)}
+  .tabcontent{flex:1;overflow-y:auto;padding:14px}
+  .tabpane{display:none}
+  .tabpane.active{display:block}
+
+  .prop-empty{color:var(--muted);font-size:13px;text-align:center;margin-top:30px;line-height:1.6}
+  .prop h4{margin:0 0 2px;font-size:16px}
+  .prop .type{color:var(--muted);font-size:12px;margin-bottom:12px}
+  .field{margin-bottom:9px}
+  .field label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:3px}
+  .field .val{font-family:monospace;font-size:13px;background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:6px 8px;display:flex;justify-content:space-between;align-items:center}
+  .field .val .tag{font-size:9px;padding:1px 5px;border-radius:6px;font-family:sans-serif}
+  .chip{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;margin:2px 3px 2px 0;background:var(--panel2);border:1px solid var(--line)}
+  .del-btn{width:100%;margin-top:10px;background:transparent;border:1px solid var(--bad);color:var(--bad);padding:7px;border-radius:8px;font-size:12px}
+  .del-btn:hover{background:var(--bad);color:#fff}
+
+  /* glossary */
+  .gloss-item{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;overflow:hidden;background:var(--panel2)}
+  .gloss-item summary{padding:9px 11px;font-weight:600;font-size:13px;cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+  .gloss-item summary::-webkit-details-marker{display:none}
+  .gloss-item summary .k{font-size:16px}
+  .gloss-item p{margin:0;padding:0 11px 11px 11px;font-size:12px;color:var(--muted);line-height:1.55}
+
+  /* retos */
+  .mission{border:1px solid var(--line);border-radius:11px;padding:11px;margin-bottom:10px;background:var(--panel2);transition:.2s}
+  .mission.done{border-color:var(--good);background:rgba(49,208,170,.08)}
+  .mission.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(79,140,255,.15)}
+  .mission .mh{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;margin-bottom:5px}
+  .mission .mh .num{width:20px;height:20px;border-radius:50%;background:var(--panel);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;flex:0 0 auto}
+  .mission.done .mh .num{background:var(--good);border-color:var(--good);color:#04231b}
+  .mission p{margin:0 0 8px;font-size:12px;color:var(--muted);line-height:1.5}
+  .mission .status{font-size:11px;font-weight:600}
+  .mission .status.ok{color:var(--good)}
+  .mission .status.no{color:var(--muted)}
+  .progressbar{height:8px;background:var(--panel2);border-radius:6px;overflow:hidden;margin-bottom:14px;border:1px solid var(--line)}
+  .progressbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;transition:.4s}
+
+  /* console log */
+  .console{height:118px;background:#0a0e1c;border-top:1px solid var(--line);overflow-y:auto;padding:8px 14px;font-family:monospace;font-size:12px}
+  .console .ln{margin:2px 0;line-height:1.4;opacity:0;animation:fade .3s forwards}
+  @keyframes fade{to{opacity:1}}
+  .console .t-sys{color:var(--muted)}
+  .console .t-ok{color:var(--good)}
+  .console .t-info{color:var(--accent)}
+  .console .t-mac{color:var(--wlan)}
+  .console .t-warn{color:var(--warn)}
+  .console .t-bad{color:var(--bad)}
+
+  /* send modal */
+  .overlay{position:absolute;inset:0;background:rgba(6,9,20,.7);display:none;align-items:center;justify-content:center;z-index:20}
+  .overlay.show{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;width:400px;max-width:92vw}
+  .modal h3{margin:0 0 4px}
+  .modal p.hint{color:var(--muted);font-size:12px;margin:0 0 16px}
+  .modal label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .modal select,.modal input{width:100%;margin:4px 0 12px;padding:9px;background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;font-size:14px}
+  .modal .row{display:flex;gap:10px}
+  .modal .row>div{flex:1}
+  .btn-primary{background:var(--accent2);color:#04231b;border:none;padding:11px;border-radius:9px;font-weight:700;font-size:14px;width:100%}
+  .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--line);padding:9px;border-radius:9px;width:100%;margin-top:8px}
+
+  .hintbar{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(20,26,48,.92);border:1px solid var(--line);padding:7px 15px;border-radius:20px;font-size:12px;color:var(--muted);z-index:6;backdrop-filter:blur(4px)}
+  .hintbar b{color:var(--accent2)}
+  .toast{position:absolute;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--good);color:#04231b;padding:11px 20px;border-radius:12px;font-weight:700;z-index:30;transition:.4s;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  ::-webkit-scrollbar{width:9px;height:9px}
+  ::-webkit-scrollbar-thumb{background:#2b3357;border-radius:6px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo"><span class="dot"></span>NetLab <small>Simulador de Redes e Internet</small></div>
+    <div class="spacer"></div>
+    <button class="toolbtn" id="btnCable" title="Conectar dos dispositivos con cable (LAN)">🔌 Cable (LAN)</button>
+    <button class="toolbtn wifi" id="btnWifi" title="Conectar por WiFi (WLAN)">📶 WiFi (WLAN)</button>
+    <button class="toolbtn send" id="btnSend" title="Enviar un paquete de datos">📨 Enviar datos</button>
+    <button class="toolbtn" id="btnClear" title="Vaciar el escenario">🗑️ Limpiar</button>
+  </header>
+
+  <div class="main">
+    <!-- PALETTE -->
+    <aside>
+      <h3>Dispositivos</h3>
+      <div id="palette"></div>
+      <h3 style="margin-top:16px">Cómo se usa</h3>
+      <div style="font-size:11px;color:var(--muted);line-height:1.6">
+        1. Arrastra dispositivos al lienzo.<br>
+        2. Pulsa <b>Cable</b> o <b>WiFi</b> y haz clic en dos dispositivos para unirlos.<br>
+        3. Pulsa un dispositivo para ver su <b>IP, MAC, máscara…</b><br>
+        4. Pulsa <b>Enviar datos</b> y observa el viaje del paquete.
+      </div>
+    </aside>
+
+    <!-- STAGE -->
+    <div id="stage">
+      <div class="grid"></div>
+      <svg id="wires"></svg>
+      <div class="hintbar" id="hintbar">Arrastra un <b>PC</b> y un <b>Switch</b> al lienzo para empezar 🚀</div>
+      <div class="toast" id="toast"></div>
+
+      <div class="overlay" id="sendOverlay">
+        <div class="modal">
+          <h3>📨 Enviar un paquete de datos</h3>
+          <p class="hint">Elige quién envía y quién recibe. Verás cómo viaja el paquete por la red.</p>
+          <div class="row">
+            <div><label>Origen</label><select id="srcSel"></select></div>
+            <div><label>Destino</label><select id="dstSel"></select></div>
+          </div>
+          <label>Contenido / servicio</label>
+          <select id="svcSel">
+            <option value="web|80|HTTP">🌐 Página web (HTTP · puerto 80)</option>
+            <option value="webs|443|HTTPS">🔒 Web segura (HTTPS · puerto 443)</option>
+            <option value="mail|25|SMTP">✉️ Correo (SMTP · puerto 25)</option>
+            <option value="file|21|FTP">📁 Archivo (FTP · puerto 21)</option>
+            <option value="chat|5222|XMPP">💬 Mensaje de chat (puerto 5222)</option>
+          </select>
+          <button class="btn-primary" id="doSend">Enviar paquete 🚀</button>
+          <button class="btn-ghost" id="cancelSend">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right">
+      <div class="tabs">
+        <button data-tab="props" class="active">🔧 Propiedades</button>
+        <button data-tab="retos">🎯 Retos</button>
+        <button data-tab="gloss">📖 Glosario</button>
+      </div>
+      <div class="tabcontent">
+        <div class="tabpane active" id="tab-props">
+          <div class="prop-empty" id="propEmpty">Haz clic en un dispositivo del lienzo para ver su configuración de red:<br><br>dirección IP, MAC, máscara de red, puerta de enlace, DNS y puertos.</div>
+          <div class="prop" id="propBody" style="display:none"></div>
+        </div>
+        <div class="tabpane" id="tab-retos">
+          <div class="progressbar"><i id="progFill"></i></div>
+          <div id="missions"></div>
+        </div>
+        <div class="tabpane" id="tab-gloss"><div id="glossary"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="console" id="console"></div>
+</div>
+
+<script>
+/* ============================================================
+   NetLab — Simulador de redes para ESO 3º-4º
+   ============================================================ */
+
+const DEVTYPES = {
+  pc:     {ico:'💻', nm:'PC',        sub:'Nodo / host',   host:true,  net:false},
+  laptop: {ico:'📱', nm:'Portátil',  sub:'Nodo WiFi',     host:true,  net:false, wifi:true},
+  server: {ico:'🖥️', nm:'Servidor',  sub:'Aloja webs',    host:true,  net:false},
+  dns:    {ico:'🧭', nm:'Servidor DNS', sub:'Traduce nombres', host:true, net:false, dns:true},
+  switch: {ico:'🔀', nm:'Switch',    sub:'Une la LAN',    host:false, net:true},
+  router: {ico:'📡', nm:'Router',    sub:'Salida a WAN',  host:false, net:true, router:true},
+  wan:    {ico:'🌐', nm:'Internet',  sub:'Red WAN',       host:false, net:true, wan:true},
+};
+
+let nodes = [];   // {id,type,x,y,el,ip,mac,mask,gw,dns,name,ports}
+let links = [];   // {a,b,kind:'lan'|'wlan'|'wan'}
+let seq = 0;
+let mode = 'move'; // move | cable | wifi
+let selected = null;
+let linkPick = null;
+let ipCounter = 10;
+
+const stage = document.getElementById('stage');
+const wires = document.getElementById('wires');
+const consoleEl = document.getElementById('console');
+
+/* ---------- utilidades ---------- */
+function randMac(){
+  const h=()=>Math.floor(Math.random()*256).toString(16).padStart(2,'0').toUpperCase();
+  return [h(),h(),h(),h(),h(),h()].join(':');
+}
+function log(msg,cls='sys'){
+  const d=document.createElement('div');
+  d.className='ln t-'+cls; d.textContent=msg;
+  consoleEl.appendChild(d); consoleEl.scrollTop=consoleEl.scrollHeight;
+}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2600);
+}
+function hint(html){document.getElementById('hintbar').innerHTML=html;}
+
+/* ---------- crear paleta ---------- */
+const paletteEl=document.getElementById('palette');
+Object.entries(DEVTYPES).forEach(([k,d])=>{
+  const el=document.createElement('div');
+  el.className='palette-item'; el.draggable=true; el.dataset.type=k;
+  el.innerHTML=`<span class="ico">${d.ico}</span><div><div class="nm">${d.nm}</div><div class="sub">${d.sub}</div></div>`;
+  el.addEventListener('dragstart',e=>e.dataTransfer.setData('type',k));
+  paletteEl.appendChild(el);
+});
+stage.addEventListener('dragover',e=>e.preventDefault());
+stage.addEventListener('drop',e=>{
+  e.preventDefault();
+  const type=e.dataTransfer.getData('type'); if(!type)return;
+  const r=stage.getBoundingClientRect();
+  addNode(type,e.clientX-r.left,e.clientY-r.top);
+});
+
+/* ---------- añadir nodo ---------- */
+function addNode(type,x,y){
+  const def=DEVTYPES[type];
+  const id='n'+(++seq);
+  const n={id,type,x,y,name:def.nm+' '+seq,
+    mac:(def.host||def.router)?randMac():null,
+    ip:null,mask:null,gw:null,dns:null,ports:[]};
+  if(type==='server'){n.name='Servidor web';n.ports=[80,443];n.host='www.clase.es';}
+  if(type==='dns'){n.name='Servidor DNS';n.ports=[53];}
+  if(type==='pc'||type==='laptop'){n.ports=[];}
+  if(type==='wan'){n.name='Internet (WAN)';}
+
+  const el=document.createElement('div');
+  el.className='node'; el.dataset.id=id;
+  el.style.left=x+'px'; el.style.top=y+'px';
+  el.innerHTML=`<div class="box">${def.ico}${def.wan?'<span class="badge">WAN</span>':''}</div>
+    <div class="lbl">${n.name}</div><div class="ipl"></div>`;
+  stage.appendChild(el);
+  n.el=el;
+  nodes.push(n);
+  makeDraggable(el,n);
+  el.addEventListener('click',ev=>{ev.stopPropagation();onNodeClick(n);});
+  log(`➕ Añadido: ${n.name}`,'info');
+  autoConfigure();
+  checkMissions();
+  updateHint();
+  return n;
+}
+
+/* ---------- arrastrar nodos ---------- */
+function makeDraggable(el,n){
+  let dragging=false,ox,oy,moved;
+  el.addEventListener('mousedown',e=>{
+    if(mode!=='move')return;
+    dragging=true;moved=false;
+    const r=stage.getBoundingClientRect();
+    ox=e.clientX-r.left-n.x; oy=e.clientY-r.top-n.y;
+    el.style.cursor='grabbing';e.preventDefault();
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!dragging)return;moved=true;
+    const r=stage.getBoundingClientRect();
+    n.x=Math.max(45,Math.min(r.width-45,e.clientX-r.left-ox));
+    n.y=Math.max(45,Math.min(r.height-45,e.clientY-r.top-oy));
+    el.style.left=n.x+'px';el.style.top=n.y+'px';
+    drawWires();
+  });
+  window.addEventListener('mouseup',()=>{if(dragging){dragging=false;el.style.cursor='grab';}});
+}
+
+/* ---------- clic en nodo (selección o conexión) ---------- */
+function onNodeClick(n){
+  // Al pulsar un dispositivo SIEMPRE se muestran sus propiedades
+  selectNode(n);
+  if(mode==='cable'||mode==='wifi'){
+    if(!linkPick){linkPick=n;n.el.classList.add('linkpick');
+      hint(`Ahora haz clic en el <b>segundo dispositivo</b> para conectar`);return;}
+    if(linkPick===n){linkPick.el.classList.remove('linkpick');linkPick=null;return;}
+    tryLink(linkPick,n,mode==='wifi'?'wlan':'lan');
+    linkPick.el.classList.remove('linkpick');linkPick=null;
+    return;
+  }
+}
+
+function tryLink(a,b,kind){
+  if(links.some(l=>(l.a===a.id&&l.b===b.id)||(l.a===b.id&&l.b===a.id))){
+    log('⚠️ Esos dispositivos ya están conectados','warn');return;}
+  // WiFi solo válido si al menos uno es router (punto de acceso) o dispositivo wifi
+  let realKind=kind;
+  if(kind==='wlan'){
+    const okWifi=(DEVTYPES[a.type].wifi||DEVTYPES[b.type].wifi||DEVTYPES[a.type].router||DEVTYPES[b.type].router);
+    if(!okWifi){log('⚠️ Para WiFi necesitas un router (punto de acceso) o un portátil','warn');return;}
+  }
+  // conexión con la nube WAN se marca como enlace wan
+  if(a.type==='wan'||b.type==='wan')realKind='wan';
+  links.push({a:a.id,b:b.id,kind:realKind});
+  const kn=realKind==='wlan'?'WiFi (WLAN)':realKind==='wan'?'enlace WAN':'cable (LAN)';
+  log(`🔗 ${a.name} ↔ ${b.name}  ·  ${kn}`,'ok');
+  autoConfigure();drawWires();checkMissions();updateHint();
+}
+
+/* ---------- autoconfiguración de red (educativa) ---------- */
+function autoConfigure(){
+  // Encuentra el router (gateway), el DNS y la nube de Internet
+  const router=nodes.find(n=>n.type==='router');
+  const dnsSrv=nodes.find(n=>n.type==='dns');
+  const wan=nodes.find(n=>n.type==='wan');
+  const gwIp='192.168.1.1';
+  if(router){router.ip=gwIp;router.mask='255.255.255.0';}
+
+  // Un host está "en Internet" si está conectado a la nube WAN (por sí mismo
+  // o a través de otros equipos que solo llegan a la red por la nube).
+  const publicHosts=new Set();
+  if(wan){
+    nodes.forEach(n=>{
+      if(DEVTYPES[n.type].host && isConnected(n) && reachesWanWithoutRouter(n,wan,router)){
+        publicHosts.add(n.id);
+      }
+    });
+  }
+
+  // Asigna IPs de forma estable: LAN (192.168.1.x) o pública (93.184.16.x)
+  let lanIdx=10, pubIdx=20;
+  nodes.forEach(n=>{
+    n.isPublic=false; n.publicIp=null;
+    if(DEVTYPES[n.type].host && isConnected(n)){
+      if(publicHosts.has(n.id)){
+        n.isPublic=true;
+        n.ip='93.184.16.'+pubIdx; n.publicIp=n.ip;
+        n.mask='255.255.255.0'; n.gw='—'; n.dns='—';
+        pubIdx++;
+      } else {
+        n.ip='192.168.1.'+lanIdx; n.mask='255.255.255.0';
+        n.gw=router?gwIp:'—';
+        n.dns=dnsSrv?'192.168.1.53':'—';
+        lanIdx++;
+      }
+    } else if(DEVTYPES[n.type].host){
+      n.ip='—';n.mask='—';n.gw='—';n.dns='—';
+    }
+  });
+  if(dnsSrv && isConnected(dnsSrv) && !dnsSrv.isPublic){dnsSrv.ip='192.168.1.53';}
+
+  // etiquetas IP en los nodos
+  nodes.forEach(n=>{
+    const ipl=n.el.querySelector('.ipl');
+    if(DEVTYPES[n.type].host){ipl.textContent=n.ip&&n.ip!=='—'?n.ip:'';}
+    else if(n.type==='router'){ipl.textContent=gwIp;}
+    else ipl.textContent='';
+  });
+  refreshProps();
+}
+// ¿Este host llega a la nube WAN sin pasar por el router? (=> está "en Internet")
+function reachesWanWithoutRouter(host,wan,router){
+  if(!wan)return false;
+  const blocked=router?router.id:null;
+  const seen=new Set([host.id]); const q=[host.id];
+  while(q.length){
+    const cur=q.shift();
+    for(const nb of neighbors(cur)){
+      if(nb===blocked)continue;      // no cruzar el router (eso sería la LAN)
+      if(nb===wan.id)return true;     // llega a Internet por el lado externo
+      if(!seen.has(nb)){seen.add(nb);q.push(nb);}
+    }
+  }
+  return false;
+}
+
+function neighbors(id){
+  const res=[];
+  links.forEach(l=>{if(l.a===id)res.push(l.b);if(l.b===id)res.push(l.a);});
+  return res;
+}
+function isConnected(n){return neighbors(n.id).length>0;}
+
+/* ---------- BFS ruta ---------- */
+function findPath(srcId,dstId){
+  const q=[[srcId]];const seen=new Set([srcId]);
+  while(q.length){
+    const path=q.shift();const last=path[path.length-1];
+    if(last===dstId)return path;
+    for(const nb of neighbors(last)){
+      if(!seen.has(nb)){seen.add(nb);q.push([...path,nb]);}
+    }
+  }
+  return null;
+}
+
+/* ---------- dibujar cables ---------- */
+function drawWires(){
+  wires.innerHTML='';
+  links.forEach(l=>{
+    const a=nodes.find(n=>n.id===l.a),b=nodes.find(n=>n.id===l.b);
+    if(!a||!b)return;
+    const color=l.kind==='wlan'?getComputedStyle(document.documentElement).getPropertyValue('--wlan')
+      :l.kind==='wan'?getComputedStyle(document.documentElement).getPropertyValue('--wan')
+      :getComputedStyle(document.documentElement).getPropertyValue('--lan');
+    const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+    ln.setAttribute('x1',a.x);ln.setAttribute('y1',a.y);
+    ln.setAttribute('x2',b.x);ln.setAttribute('y2',b.y);
+    ln.setAttribute('stroke',color.trim());
+    ln.setAttribute('stroke-width',l.kind==='wan'?4:3);
+    if(l.kind==='wlan')ln.setAttribute('stroke-dasharray','6 6');
+    ln.setAttribute('opacity','.75');
+    wires.appendChild(ln);
+  });
+}
+
+/* ---------- selección + panel de propiedades ---------- */
+function selectNode(n){
+  selected=n;
+  nodes.forEach(x=>x.el.classList.toggle('sel',x===n));
+  document.querySelector('.tabs button[data-tab=props]').click();
+  refreshProps();
+}
+function refreshProps(){
+  const empty=document.getElementById('propEmpty');
+  const body=document.getElementById('propBody');
+  if(!selected){empty.style.display='block';body.style.display='none';return;}
+  empty.style.display='none';body.style.display='block';
+  const n=selected;const def=DEVTYPES[n.type];
+  let rows='';
+  const F=(label,val,tag,tagcolor)=>`<div class="field"><label>${label}</label><div class="val"><span>${val||'—'}</span>${tag?`<span class="tag" style="background:${tagcolor};color:#04231b">${tag}</span>`:''}</div></div>`;
+  if(def.host){
+    rows+=F('Dirección IP',n.ip,n.isPublic?'pública · WAN':'IPv4 · LAN',n.isPublic?'#ff8a4f33':'#4f8cff33');
+    if(n.isPublic)rows+=F('Ubicación','En Internet (fuera de tu red local)');
+    rows+=F('Máscara de red',n.mask);
+    rows+=F('Puerta de enlace',n.gw,'gateway','#ff8a4f33');
+    rows+=F('Servidor DNS',n.dns);
+    rows+=F('Dirección MAC',n.mac,'física','#a06bff33');
+    rows+=F('Adaptador de red',def.wifi?'Tarjeta WiFi (inalámbrica)':'Tarjeta Ethernet (cable)');
+    if(n.ports&&n.ports.length)rows+=`<div class="field"><label>Puertos abiertos</label><div>${n.ports.map(p=>`<span class="chip">:${p}</span>`).join('')}</div></div>`;
+    if(n.host)rows+=F('Nombre de dominio',n.host,'DNS','#31d0aa33');
+  } else if(n.type==='router'){
+    rows+=F('IP (LAN)',n.ip);
+    rows+=F('MAC',n.mac,'física','#a06bff33');
+    rows+=F('Función','Une la LAN con la WAN (Internet)');
+    rows+=F('Además','Asigna direcciones y hace de puerta de enlace');
+  } else if(n.type==='switch'){
+    rows+=F('Tipo','Dispositivo de red (capa 2)');
+    rows+=F('Función','Reenvía tramas dentro de la LAN usando la MAC');
+    rows+=F('Direcciona por','Dirección MAC (no usa IP)');
+  } else if(n.type==='wan'){
+    rows+=F('Tipo','Red de área extensa (WAN)');
+    rows+=F('Es','El conjunto global: Internet');
+  }
+  const conns=neighbors(n.id).map(id=>nodes.find(x=>x.id===id)?.name).filter(Boolean);
+  rows+=`<div class="field"><label>Conexiones</label><div>${conns.length?conns.map(c=>`<span class="chip">${c}</span>`).join(''):'<span style="color:var(--muted);font-size:12px">Sin conectar</span>'}</div></div>`;
+  body.innerHTML=`<h4>${def.ico} ${n.name}</h4><div class="type">${def.nm} · ${def.sub}</div>${rows}
+    <button class="del-btn" onclick="deleteNode('${n.id}')">Eliminar dispositivo</button>`;
+}
+function deleteNode(id){
+  const n=nodes.find(x=>x.id===id);if(!n)return;
+  n.el.remove();
+  nodes=nodes.filter(x=>x.id!==id);
+  links=links.filter(l=>l.a!==id&&l.b!==id);
+  if(selected===n)selected=null;
+  autoConfigure();drawWires();refreshProps();checkMissions();updateHint();
+  log(`🗑️ Eliminado: ${n.name}`,'warn');
+}
+stage.addEventListener('click',()=>{selected=null;nodes.forEach(x=>x.el.classList.remove('sel'));refreshProps();});
+
+/* ---------- modos de herramienta ---------- */
+function setMode(m){
+  mode=m;
+  document.getElementById('btnCable').classList.toggle('active',m==='cable');
+  document.getElementById('btnWifi').classList.toggle('active',m==='wifi');
+  if(linkPick){linkPick.el.classList.remove('linkpick');linkPick=null;}
+  if(m==='cable')hint('Modo <b>cable</b>: haz clic en dos dispositivos para unirlos por LAN 🔌');
+  else if(m==='wifi')hint('Modo <b>WiFi</b>: haz clic en un router/portátil y otro dispositivo 📶');
+  else updateHint();
+}
+document.getElementById('btnCable').onclick=()=>setMode(mode==='cable'?'move':'cable');
+document.getElementById('btnWifi').onclick=()=>setMode(mode==='wifi'?'move':'wifi');
+document.getElementById('btnClear').onclick=()=>{
+  if(!confirm('¿Vaciar todo el escenario?'))return;
+  nodes.forEach(n=>n.el.remove());nodes=[];links=[];selected=null;seq=0;
+  drawWires();refreshProps();checkMissions();updateHint();log('🧹 Escenario vaciado','sys');
+};
+
+/* ---------- ENVIAR PAQUETE ---------- */
+const sendOverlay=document.getElementById('sendOverlay');
+document.getElementById('btnSend').onclick=()=>openSend();
+document.getElementById('cancelSend').onclick=()=>sendOverlay.classList.remove('show');
+function openSend(){
+  const hosts=nodes.filter(n=>DEVTYPES[n.type].host&&isConnected(n));
+  if(hosts.length<2){toast('Necesitas al menos 2 dispositivos conectados');return;}
+  const src=document.getElementById('srcSel'),dst=document.getElementById('dstSel');
+  src.innerHTML='';dst.innerHTML='';
+  hosts.forEach(h=>{
+    src.innerHTML+=`<option value="${h.id}">${DEVTYPES[h.type].ico} ${h.name}</option>`;
+    dst.innerHTML+=`<option value="${h.id}">${DEVTYPES[h.type].ico} ${h.name}</option>`;
+  });
+  if(hosts.length>1)dst.selectedIndex=1;
+  sendOverlay.classList.add('show');
+}
+document.getElementById('doSend').onclick=()=>{
+  const srcId=document.getElementById('srcSel').value;
+  const dstId=document.getElementById('dstSel').value;
+  const [svc,port,proto]=document.getElementById('svcSel').value.split('|');
+  sendOverlay.classList.remove('show');
+  if(srcId===dstId){toast('Elige un destino diferente');return;}
+  animatePacket(srcId,dstId,port,proto);
+};
+
+function animatePacket(srcId,dstId,port,proto){
+  const path=findPath(srcId,dstId);
+  const src=nodes.find(n=>n.id===srcId),dst=nodes.find(n=>n.id===dstId);
+  if(!path){
+    log(`❌ No hay ruta entre ${src.name} y ${dst.name}. ¿Falta conectar algún dispositivo?`,'bad');
+    toast('❌ Sin ruta: revisa las conexiones');return;
+  }
+  log(`━━━ 📨 ${src.name} → ${dst.name} · ${proto} puerto ${port} ━━━`,'info');
+  log(`1️⃣ Se prepara el mensaje y se trocea en PAQUETES.`,'sys');
+  log(`   Cabecera → IP origen ${src.ip} · IP destino ${dst.ip} · puerto ${port}`,'sys');
+  log(`2️⃣ El nodo pregunta por ARP la MAC del siguiente salto…`,'mac');
+
+  // crea el paquete visual
+  const p=document.createElement('div');
+  p.className='packet';p.textContent='📦';
+  p.style.color=getComputedStyle(document.documentElement).getPropertyValue('--accent2');
+  stage.appendChild(p);
+
+  let totalLatency=0;
+  let i=0;
+  function step(){
+    if(i>=path.length){
+      // llegó
+      log(`✅ Paquete entregado a ${dst.name}. Se reensambla el mensaje.`,'ok');
+      log(`⏱️ Latencia total del viaje: ${totalLatency} ms`, totalLatency>120?'warn':'ok');
+      toast(`✅ Entregado · ${totalLatency} ms`);
+      p.remove();
+      // respuesta DNS educativa si el destino es servidor web y hay DNS
+      checkMissions();
+      return;
+    }
+    const cur=nodes.find(n=>n.id===path[i]);
+    p.style.left=cur.x+'px';p.style.top=cur.y+'px';
+    // mensaje por tipo de salto
+    if(i>0){
+      const prev=nodes.find(n=>n.id===path[i-1]);
+      const link=links.find(l=>(l.a===prev.id&&l.b===cur.id)||(l.a===cur.id&&l.b===prev.id));
+      let lat= link.kind==='wan'?60 : link.kind==='wlan'?12 : 3;
+      lat+=Math.floor(Math.random()*4);
+      totalLatency+=lat;
+      if(cur.type==='switch')log(`   🔀 Switch: lee la MAC destino y reenvía por el puerto correcto. (+${lat} ms)`,'mac');
+      else if(cur.type==='router')log(`   📡 Router: mira la IP destino y la reenvía hacia la puerta de enlace / WAN. (+${lat} ms)`,'info');
+      else if(cur.type==='wan')log(`   🌐 Viaja por Internet (WAN) entre routers lejanos. (+${lat} ms)`,'warn');
+      else if(cur.id===dstId)log(`   🎯 Llega al destino ${cur.name}. (+${lat} ms)`,'ok');
+      else log(`   → pasa por ${cur.name}. (+${lat} ms)`,'sys');
+    } else {
+      // origen: si va a un servidor web por nombre, resuelve DNS
+      if(dst.type==='server'&&nodes.some(n=>n.type==='dns'&&isConnected(n))){
+        log(`   🧭 DNS: "${dst.host}" se traduce a la IP ${dst.publicIp||dst.ip}.`,'info');
+      }
+    }
+    i++;
+    setTimeout(step,650);
+  }
+  step();
+}
+
+/* ---------- indicaciones dinámicas ---------- */
+function updateHint(){
+  if(mode!=='move')return;
+  const n=nodes.length;
+  if(n===0)hint('Arrastra un <b>PC</b> y un <b>Switch</b> al lienzo para empezar 🚀');
+  else if(links.length===0)hint('Pulsa <b>🔌 Cable (LAN)</b> y une dos dispositivos');
+  else hint('Pulsa <b>📨 Enviar datos</b> para ver viajar un paquete, o mira los <b>🎯 Retos</b>');
+}
+
+/* ---------- pestañas ---------- */
+document.querySelectorAll('.tabs button').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('tab-'+b.dataset.tab).classList.add('active');
+  };
+});
+
+/* ---------- GLOSARIO ---------- */
+const GLOSSARY=[
+  ['🖧','Red','Conjunto de dispositivos conectados entre sí para compartir datos y recursos.'],
+  ['💻','Nodo','Cada dispositivo conectado a la red (un PC, un móvil, un servidor…). También se llama host.'],
+  ['📦','Paquete','La información se trocea en paquetes pequeños. Cada uno lleva una cabecera con las direcciones de origen y destino.'],
+  ['📋','Protocolo','Reglas comunes que permiten a los dispositivos "hablar" el mismo idioma (HTTP, TCP/IP, DNS…).'],
+  ['🚪','Puerto','Número que identifica un servicio dentro de un dispositivo (web=80/443, correo=25, DNS=53). Como la puerta de un edificio.'],
+  ['🏷️','Dirección IP','Identifica a un dispositivo en la red, como una dirección postal. Ej: 192.168.1.10.'],
+  ['🔤','MAC','Dirección física única grabada en la tarjeta de red. Ej: 3A:1F:… Identifica al hardware.'],
+  ['🎭','Máscara de red','Indica qué parte de la IP es la red y qué parte es el dispositivo. Ej: 255.255.255.0.'],
+  ['🚪','Puerta de enlace','El router que da salida de la red local hacia otras redes (Internet). Es el "portal".'],
+  ['🧭','DNS','Traduce nombres fáciles (www.clase.es) a direcciones IP que entienden las máquinas.'],
+  ['🔌','Adaptador / tarjeta de red','Hardware que conecta el dispositivo a la red, por cable (Ethernet) o inalámbrico (WiFi).'],
+  ['🏠','LAN','Red de área local: dispositivos cercanos (aula, casa) unidos normalmente por cable o switch.'],
+  ['📶','WLAN','LAN inalámbrica: la misma idea que la LAN pero por WiFi, sin cables.'],
+  ['🌐','WAN','Red de área extensa que conecta redes lejanas. Internet es la WAN más grande.'],
+  ['🔀','Switch','Dispositivo que une los equipos de una LAN y reenvía datos usando la dirección MAC.'],
+  ['📡','Router','Dispositivo que conecta redes distintas (tu LAN con Internet) usando direcciones IP.'],
+  ['⏱️','Latencia','Tiempo que tarda un paquete en llegar de un punto a otro, medido en milisegundos (ms).'],
+];
+const glossEl=document.getElementById('glossary');
+GLOSSARY.forEach(([k,t,d])=>{
+  const el=document.createElement('details');el.className='gloss-item';
+  el.innerHTML=`<summary><span class="k">${k}</span>${t}</summary><p>${d}</p>`;
+  glossEl.appendChild(el);
+});
+
+/* ---------- RETOS / MISIONES ---------- */
+const MISSIONS=[
+  {t:'Crea tu primera LAN',d:'Añade 2 PC y un Switch, y conéctalos con cable (LAN).',
+   check:()=>count('pc')>=2 && count('switch')>=1 && hostsLinkedTo('switch',2)},
+  {t:'Comparte datos',d:'Envía un paquete de un PC a otro y observa cómo el switch usa la MAC.',
+   check:()=>state.sentLan},
+  {t:'Salida a Internet',d:'Añade un Router y la nube de Internet (WAN), y conéctalos.',
+   check:()=>count('router')>=1 && count('wan')>=1 && linkedTypes('router','wan')},
+  {t:'Conéctate por WiFi (WLAN)',d:'Añade un Portátil y conéctalo por WiFi al router.',
+   check:()=>count('laptop')>=1 && wifiLaptop()},
+  {t:'Monta un servidor web',d:'Añade un Servidor y conéctalo con cable a la nube de Internet (WAN). Recibirá una IP pública.',
+   check:()=>nodes.some(n=>n.type==='server'&&n.isPublic)},
+  {t:'DNS al rescate',d:'Añade un Servidor DNS a tu LAN y envía datos al Servidor web: verás cómo traduce el nombre a IP.',
+   check:()=>count('dns')>=1 && state.usedDns},
+  {t:'Investiga la latencia',d:'Envía datos al Servidor web (al otro lado de Internet) y compara los ms con un envío dentro de tu LAN.',
+   check:()=>state.sentWan},
+];
+const state={sentLan:false,sentWan:false,usedDns:false};
+
+function count(type){return nodes.filter(n=>n.type===type).length;}
+function linkedTypes(t1,t2){
+  return links.some(l=>{
+    const a=nodes.find(n=>n.id===l.a),b=nodes.find(n=>n.id===l.b);
+    return (a?.type===t1&&b?.type===t2)||(a?.type===t2&&b?.type===t1);
+  });
+}
+function hostsLinkedTo(type,min){
+  const sw=nodes.filter(n=>n.type===type);
+  return sw.some(s=>neighbors(s.id).filter(id=>DEVTYPES[nodes.find(n=>n.id===id)?.type]?.host).length>=min);
+}
+function wifiLaptop(){
+  return links.some(l=>l.kind==='wlan'&&
+    ([l.a,l.b].some(id=>nodes.find(n=>n.id===id)?.type==='laptop')));
+}
+function isServerReachableFromWan(){
+  const srv=nodes.find(n=>n.type==='server');const wan=nodes.find(n=>n.type==='wan');
+  if(!srv||!wan)return false;
+  return !!findPath(srv.id,wan.id);
+}
+
+function renderMissions(){
+  const el=document.getElementById('missions');el.innerHTML='';
+  let done=0;let firstUndone=-1;
+  MISSIONS.forEach((m,i)=>{
+    const ok=m.done;
+    if(ok)done++; else if(firstUndone<0)firstUndone=i;
+  });
+  MISSIONS.forEach((m,i)=>{
+    const div=document.createElement('div');
+    div.className='mission'+(m.done?' done':(i===firstUndone?' active':''));
+    div.innerHTML=`<div class="mh"><span class="num">${m.done?'✓':i+1}</span>${m.t}</div>
+      <p>${m.d}</p><div class="status ${m.done?'ok':'no'}">${m.done?'✅ ¡Completado!':(i===firstUndone?'⏳ Reto actual':'🔒 Pendiente')}</div>`;
+    el.appendChild(div);
+  });
+  document.getElementById('progFill').style.width=(done/MISSIONS.length*100)+'%';
+}
+function checkMissions(){
+  let newly=false;
+  MISSIONS.forEach(m=>{
+    if(!m.done && m.check()){m.done=true;newly=true;log(`🏆 Reto completado: ${m.t}`,'ok');}
+  });
+  if(newly){toast('🏆 ¡Reto completado!');}
+  if(MISSIONS.every(m=>m.done))setTimeout(()=>toast('🎉 ¡Has completado todos los retos!'),400);
+  renderMissions();
+}
+
+/* enganchar estado de envíos a las misiones */
+const _origAnimate=animatePacket;
+animatePacket=function(srcId,dstId,port,proto){
+  const path=findPath(srcId,dstId);
+  if(path){
+    const crossesWan=path.some(id=>nodes.find(n=>n.id===id)?.type==='wan');
+    const dst=nodes.find(n=>n.id===dstId);
+    if(crossesWan)state.sentWan=true; else state.sentLan=true;
+    if(dst.type==='server'&&nodes.some(n=>n.type==='dns'&&isConnected(n)))state.usedDns=true;
+  }
+  _origAnimate(srcId,dstId,port,proto);
+  setTimeout(checkMissions,path?path.length*650+300:100);
+};
+
+/* ---------- init ---------- */
+renderMissions();
+updateHint();
+log('👋 Bienvenido a NetLab. Arrastra dispositivos desde la izquierda para construir tu red.','info');
+window.addEventListener('resize',drawWires);
+</script>
+</body>
+</html>

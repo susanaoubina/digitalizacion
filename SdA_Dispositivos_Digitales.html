@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Situación de aprendizaje · Dispositivos digitales · 4º ESO</title>
+<style>
+:root{
+  --bg:#0b1020; --bg2:#111935; --panel:#161f3f; --panel2:#1d2950;
+  --ink:#eef2ff; --muted:#9fb0d8; --line:#2b3a6b;
+  --cyan:#22d3ee; --blue:#3b82f6; --violet:#8b5cf6; --green:#34d399;
+  --amber:#fbbf24; --pink:#f472b6; --red:#f87171;
+  --shadow:0 12px 40px rgba(0,0,0,.45);
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:radial-gradient(1200px 700px at 80% -10%,#1b2a5e 0%,transparent 55%),
+                       radial-gradient(1000px 600px at -10% 10%,#242046 0%,transparent 50%),var(--bg);
+  color:var(--ink); font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+a{color:var(--cyan)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+/* NAV */
+header.topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);
+  background:rgba(11,16,32,.82);border-bottom:1px solid var(--line)}
+.topbar .row{display:flex;align-items:center;gap:14px;padding:10px 0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.3px}
+.brand .dot{width:14px;height:14px;border-radius:4px;background:linear-gradient(135deg,var(--cyan),var(--violet));box-shadow:0 0 14px var(--cyan)}
+nav.menu{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+nav.menu a{color:var(--muted);text-decoration:none;font-size:.86rem;font-weight:600;
+  padding:6px 11px;border-radius:999px;border:1px solid transparent;transition:.2s;white-space:nowrap}
+nav.menu a:hover{color:var(--ink);border-color:var(--line);background:var(--panel)}
+
+/* HERO */
+.hero{padding:64px 0 34px;position:relative;overflow:hidden}
+.badge{display:inline-flex;gap:8px;align-items:center;font-size:.78rem;font-weight:700;letter-spacing:.5px;
+  color:var(--cyan);background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.35);
+  padding:6px 14px;border-radius:999px;text-transform:uppercase}
+.hero h1{font-size:clamp(2.1rem,5vw,3.6rem);line-height:1.05;margin:18px 0 10px;font-weight:900;letter-spacing:-1px}
+.hero h1 span{background:linear-gradient(120deg,var(--cyan),var(--violet) 60%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.lead{font-size:1.12rem;color:var(--muted);max-width:720px}
+.chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.chip{font-size:.82rem;font-weight:600;background:var(--panel);border:1px solid var(--line);
+  padding:8px 14px;border-radius:12px;color:var(--ink);display:flex;gap:8px;align-items:center}
+.chip b{color:var(--cyan)}
+
+/* CURRICULUM STRIP */
+.curr{margin-top:34px;background:linear-gradient(180deg,var(--panel),var(--bg2));
+  border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.curr h3{margin:0 0 6px;font-size:1rem;color:var(--amber);letter-spacing:.4px;text-transform:uppercase}
+.curr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:14px}
+.curr-card{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.curr-card .tag{font-size:.72rem;font-weight:800;color:var(--violet);letter-spacing:.5px}
+.curr-card p{margin:6px 0 0;font-size:.9rem;color:var(--muted)}
+
+/* SECTIONS */
+section{padding:52px 0;border-top:1px solid rgba(43,58,107,.5)}
+.sec-head{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.sec-num{font-size:.8rem;font-weight:800;color:var(--bg);background:linear-gradient(135deg,var(--cyan),var(--violet));
+  width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:0 0 auto}
+.sec-head h2{font-size:clamp(1.5rem,3.4vw,2.1rem);margin:0;font-weight:850;letter-spacing:-.5px}
+.sec-sub{color:var(--muted);max-width:760px;margin:0 0 26px;font-size:1.02rem}
+.pill-ca{display:inline-block;font-size:.7rem;font-weight:800;color:var(--green);
+  background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.4);padding:3px 9px;border-radius:999px;margin-left:6px}
+
+/* HARDWARE EXPLORER */
+.hw{display:grid;grid-template-columns:1.05fr 1fr;gap:22px;align-items:start}
+@media(max-width:860px){.hw{grid-template-columns:1fr}}
+.board{background:
+  linear-gradient(180deg,#0e2036,#0a1526);
+  border:1px solid var(--line);border-radius:var(--radius);padding:20px;position:relative;box-shadow:var(--shadow)}
+.board .title{font-size:.78rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:14px}
+.comp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.comp{cursor:pointer;border:1px solid var(--line);border-radius:12px;padding:12px 8px;text-align:center;
+  background:var(--panel);transition:.18s;user-select:none}
+.comp:hover{transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 22px rgba(34,211,238,.18)}
+.comp.active{border-color:var(--cyan);background:linear-gradient(180deg,rgba(34,211,238,.16),var(--panel));box-shadow:0 0 0 2px rgba(34,211,238,.35) inset}
+.comp .ic{font-size:1.7rem;line-height:1}
+.comp .nm{font-size:.78rem;font-weight:700;margin-top:6px}
+.comp .sub{font-size:.66rem;color:var(--muted)}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;min-height:340px}
+.detail h4{margin:0 0 4px;font-size:1.3rem;display:flex;align-items:center;gap:10px}
+.detail .role{font-size:.78rem;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.6px}
+.detail p{color:var(--muted);font-size:.96rem}
+.detail .facts{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.fact{display:flex;gap:10px;font-size:.9rem;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.fact b{color:var(--ink);min-width:96px}
+.analogy{margin-top:14px;font-size:.9rem;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.4);
+  border-radius:10px;padding:11px 13px;color:#d9ccff}
+.analogy b{color:var(--violet)}
+
+/* TABS */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tab{cursor:pointer;font-weight:700;font-size:.9rem;padding:9px 16px;border-radius:12px;border:1px solid var(--line);
+  background:var(--panel);color:var(--muted);transition:.18s}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--bg);background:linear-gradient(135deg,var(--cyan),var(--blue));border-color:transparent}
+.tabpane{display:none;animation:fade .35s ease}
+.tabpane.show{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.card h5{margin:0 0 6px;font-size:1.05rem}
+.card p,.card li{color:var(--muted);font-size:.92rem}
+.card ul{margin:8px 0 0;padding-left:18px}
+
+/* ACCORDION */
+.acc{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px;background:var(--panel)}
+.acc-h{cursor:pointer;padding:14px 16px;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.acc-h:hover{background:var(--panel2)}
+.acc-h .arw{transition:.25s;color:var(--cyan)}
+.acc.open .arw{transform:rotate(90deg)}
+.acc-b{max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 16px}
+.acc.open .acc-b{max-height:600px;padding:0 16px 16px}
+.acc-b p,.acc-b li{color:var(--muted);font-size:.92rem}
+
+/* NETWORK DIAGRAM */
+.net{background:linear-gradient(180deg,#0b1830,#0a1220);border:1px solid var(--line);border-radius:var(--radius);
+  padding:24px;box-shadow:var(--shadow)}
+.net-flow{display:flex;align-items:stretch;gap:0;justify-content:center;flex-wrap:wrap}
+.node{cursor:pointer;text-align:center;min-width:120px;padding:14px 10px;border-radius:14px;border:1px solid var(--line);
+  background:var(--panel);transition:.18s;position:relative}
+.node:hover{border-color:var(--cyan);transform:translateY(-3px)}
+.node.on{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(34,211,238,.4) inset}
+.node .ic{font-size:1.8rem}
+.node .nm{font-weight:700;font-size:.86rem;margin-top:4px}
+.node .sub{font-size:.68rem;color:var(--muted)}
+.link{display:grid;place-items:center;min-width:44px;color:var(--cyan);font-size:1.4rem;font-weight:800}
+.net-detail{margin-top:16px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px;min-height:90px}
+.net-detail p{margin:0;color:var(--muted);font-size:.94rem}
+
+/* IoT cards */
+.iot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.iot{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center;transition:.18s}
+.iot:hover{transform:translateY(-4px);border-color:var(--violet);box-shadow:0 10px 26px rgba(139,92,246,.2)}
+.iot .ic{font-size:2rem}
+.iot h5{margin:8px 0 4px;font-size:.98rem}
+.iot p{margin:0;font-size:.8rem;color:var(--muted)}
+
+/* TROUBLESHOOTER */
+.ts{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.ts-q{font-size:1.15rem;font-weight:800;margin-bottom:16px;min-height:30px}
+.ts-opts{display:flex;flex-direction:column;gap:10px}
+.ts-opt{cursor:pointer;text-align:left;padding:13px 16px;border-radius:12px;border:1px solid var(--line);
+  background:var(--bg);color:var(--ink);font-weight:600;font-size:.94rem;transition:.16s}
+.ts-opt:hover{border-color:var(--cyan);background:var(--panel2);transform:translateX(4px)}
+.ts-result{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.4);border-radius:12px;padding:16px;color:#d1fae5}
+.ts-result.warn{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.45);color:#fef3c7}
+.ts-steps{margin:8px 0 0;padding-left:20px}
+.ts-back{margin-top:14px;cursor:pointer;color:var(--cyan);font-weight:700;font-size:.9rem;background:none;border:none;padding:0}
+.ts-crumb{font-size:.78rem;color:var(--muted);margin-bottom:12px}
+
+/* CONVERTER */
+.conv{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:center}
+@media(max-width:620px){.conv{grid-template-columns:1fr}}
+.conv-in{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.conv-in label{font-size:.82rem;color:var(--muted);font-weight:600}
+.conv-in input,.conv-in select{width:100%;margin-top:8px;background:var(--bg);border:1px solid var(--line);
+  color:var(--ink);border-radius:10px;padding:11px 12px;font-size:1rem}
+.conv-out{background:linear-gradient(135deg,rgba(34,211,238,.12),rgba(139,92,246,.12));
+  border:1px solid var(--line);border-radius:14px;padding:18px;font-size:.95rem}
+.conv-out .big{font-size:1.6rem;font-weight:800;color:var(--cyan)}
+.conv-out div{margin:4px 0}
+
+/* QUIZ */
+.quiz{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+.quiz .qtxt{font-weight:800;font-size:1.08rem;margin-bottom:14px}
+.quiz .opts{display:grid;gap:10px}
+.qopt{cursor:pointer;text-align:left;padding:12px 15px;border-radius:11px;border:1px solid var(--line);
+  background:var(--bg);color:var(--ink);font-size:.94rem;font-weight:600;transition:.15s}
+.qopt:hover{border-color:var(--cyan)}
+.qopt.correct{border-color:var(--green);background:rgba(52,211,153,.16)}
+.qopt.wrong{border-color:var(--red);background:rgba(248,113,113,.16)}
+.qopt:disabled{cursor:default}
+.q-feedback{margin-top:14px;font-size:.9rem;padding:12px 14px;border-radius:10px;display:none}
+.q-feedback.show{display:block}
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:18px}
+.q-prog{font-size:.84rem;color:var(--muted)}
+.btn{cursor:pointer;font-weight:700;font-size:.92rem;padding:10px 20px;border-radius:11px;border:none;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));color:var(--bg);transition:.18s}
+.btn:hover{filter:brightness(1.1)}
+.btn:disabled{opacity:.4;cursor:default}
+.quiz-final{text-align:center;padding:20px}
+.quiz-final .score{font-size:3rem;font-weight:900;background:linear-gradient(120deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* GLOSSARY */
+.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.term{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.term b{color:var(--cyan)}
+.term p{margin:4px 0 0;font-size:.86rem;color:var(--muted)}
+
+/* SDA */
+.sda-hero{background:linear-gradient(135deg,rgba(139,92,246,.15),rgba(34,211,238,.10));border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}
+.sda-hero .q{font-size:1.18rem;font-weight:800;color:var(--ink);margin:10px 0}
+.sda-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:18px}
+.sda-box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.sda-box h5{margin:0 0 8px;color:var(--cyan);font-size:.9rem;text-transform:uppercase;letter-spacing:.4px}
+.sda-box p,.sda-box li{color:var(--muted);font-size:.9rem}
+.sda-box ul{margin:6px 0 0;padding-left:18px}
+.roles{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.role-badge{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 13px;font-size:.82rem;font-weight:600}
+.prod{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:10px}
+.prod-item{background:var(--bg);border:1px solid var(--line);border-left:3px solid var(--cyan);border-radius:10px;padding:12px 14px;font-size:.87rem;color:var(--muted)}
+.prod-item b{color:var(--ink)}
+/* TIMELINE */
+.tl{display:flex;flex-direction:column;gap:10px}
+.ses{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ses-h{cursor:pointer;display:flex;gap:14px;align-items:center;padding:13px 16px}
+.ses-h:hover{background:var(--panel2)}
+.ses-n{flex:0 0 auto;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-weight:800;color:var(--bg);background:linear-gradient(135deg,var(--cyan),var(--violet))}
+.ses-t{font-weight:700;font-size:.98rem}
+.ses-tag{font-size:.68rem;color:var(--muted);margin-left:auto;text-align:right;min-width:70px}
+.ses-b{max-height:0;overflow:hidden;transition:max-height .35s ease;padding:0 16px}
+.ses.open .ses-b{max-height:520px;padding:0 16px 14px}
+.ses-b p,.ses-b li{color:var(--muted);font-size:.88rem;margin:6px 0}
+.ses-b .lab{color:var(--cyan);font-weight:700;font-size:.74rem;text-transform:uppercase;letter-spacing:.4px}
+.phase{display:inline-block;font-size:.66rem;font-weight:800;padding:2px 8px;border-radius:999px;margin-left:8px}
+.ph-ini{background:rgba(251,191,36,.15);color:var(--amber)}
+.ph-des{background:rgba(59,130,246,.16);color:#93c5fd}
+.ph-fin{background:rgba(52,211,153,.15);color:var(--green)}
+/* RUBRIC */
+.rub-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.rtab{cursor:pointer;font-weight:700;font-size:.84rem;padding:9px 15px;border-radius:11px;border:1px solid var(--line);background:var(--panel);color:var(--muted);transition:.18s}
+.rtab:hover{color:var(--ink)}
+.rtab.active{color:var(--bg);background:linear-gradient(135deg,var(--green),var(--cyan));border-color:transparent}
+.rpane{display:none;animation:fade .35s ease}
+.rpane.show{display:block}
+.rub-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--line)}
+.rub-table{width:100%;border-collapse:collapse;font-size:.83rem;min-width:720px}
+.rub-table th,.rub-table td{border:1px solid var(--line);padding:11px 12px;vertical-align:top;text-align:left}
+.rub-table th{background:var(--panel2);color:var(--ink);font-size:.76rem;text-transform:uppercase;letter-spacing:.3px}
+.rub-table td{color:var(--muted)}
+.rub-table .dim{font-weight:700;color:var(--ink);background:var(--panel);min-width:150px}
+.rub-table .n1{border-top:3px solid #f87171}
+.rub-table .n2{border-top:3px solid var(--amber)}
+.rub-table .n3{border-top:3px solid #93c5fd}
+.rub-table .n4{border-top:3px solid var(--green)}
+.crit-desc{background:rgba(34,211,238,.08);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:.9rem;color:var(--muted)}
+.crit-desc b{color:var(--cyan)}
+.calif{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px}
+.calif-item{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+.calif-item .pc{font-size:1.7rem;font-weight:900;background:linear-gradient(120deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.calif-item p{margin:4px 0 0;font-size:.82rem;color:var(--muted)}
+
+/* FOOTER */
+footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--muted);font-size:.86rem;text-align:center}
+footer .src{max-width:760px;margin:12px auto 0;font-size:.78rem;opacity:.8}
+.kbd{font-family:monospace;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:.82rem;color:var(--cyan)}
+.hl{color:var(--amber);font-weight:700}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap row">
+    <div class="brand"><span class="dot"></span> SdA · Dispositivos digitales</div>
+    <nav class="menu">
+      <a href="#sda">Reto y producto</a>
+      <a href="#tempo">Temporalización</a>
+      <a href="#rubrica">Rúbrica</a>
+      <a href="simulador-red.html">Simulador NetLab ↗</a>
+      <a href="UD1_Dispositivos_Digitales.html">Infografía ↗</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="top" style="border-top:none">
+  <div class="wrap">
+    <span class="badge">◆ Programación · Bloque 1</span>
+    <h1>Situación de <span>aprendizaje</span></h1>
+    <p class="lead">«El Servicio Técnico Digital del IES da Illa de Arousa». Reto, producto final, temporalización en 10 sesiones y rúbrica competencial por criterio (CA1.1, CA1.2 y CA1.3) para la unidad <b>Dispositivos digitales</b> de Dixitalización · 4.º ESO.</p>
+    <div class="chips">
+      <div class="chip"><b>👥</b> 9 alumnos/as · 3 equipos de 3</div>
+      <div class="chip"><b>🕒</b> 10 sesiones · 4-5 semanas</div>
+      <a class="chip" href="simulador-red.html" style="text-decoration:none"><b>🔗</b> Simulador NetLab · 7 retos</a>
+      <a class="chip" href="UD1_Dispositivos_Digitales.html" style="text-decoration:none"><b>📊</b> Infografía de contenidos</a>
+    </div>
+  </div>
+</section>
+
+<!-- SITUACIÓN DE APRENDIZAJE -->
+<section id="sda">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">01</div><h2>Situación de aprendizaje</h2></div>
+    <p class="sec-sub">Un reto real y contextualizado en el <b>IES da Illa de Arousa</b> que moviliza todo el Bloque 1: el alumnado se convierte en el equipo de soporte técnico del propio centro.</p>
+
+    <div class="sda-hero">
+      <span class="badge">◆ El reto</span>
+      <div class="q">"El centro necesita poner a punto sus equipos y su red y concienciar sobre un uso sostenible de la tecnología. ¿Sois capaces de constituir el <span style="color:var(--cyan)">Servicio Técnico Digital del IES da Illa de Arousa</span>, capaz de diagnosticar, configurar, conectar y documentar el mantenimiento de sus dispositivos?"</div>
+      <p style="color:var(--muted);font-size:.92rem;margin:0">Contexto auténtico: trabajáis sobre los <b>ordenadores de sobremesa reales del aula</b>, conectados a la <b>red del centro</b>. El producto tiene una utilidad real —mantenimiento y buenas prácticas digitales— y conecta con una salida profesional cercana: el soporte TIC.</p>
+    </div>
+
+    <div class="sda-grid">
+      <div class="sda-box"><h5>👥 Agrupamientos</h5>
+        <p>9 alumnos/as → <b>3 equipos de 3</b> ("brigadas técnicas"). Roles cooperativos rotativos por sesión:</p>
+        <div class="roles"><span class="role-badge">🧭 Coordinador/a</span><span class="role-badge">📝 Documentalista</span><span class="role-badge">🔧 Técnico/a de pruebas</span></div>
+      </div>
+      <div class="sda-box"><h5>🧠 Metodologías</h5><ul>
+        <li>Aprendizaje basado en retos (ABP)</li>
+        <li>Trabajo cooperativo con roles</li>
+        <li>Indagación y aprendizaje-servicio</li>
+        <li>Gamificación (simulador de averías)</li>
+        <li>Aula invertida puntual</li>
+      </ul></div>
+      <div class="sda-box"><h5>🎯 Vinculación curricular</h5>
+        <p><b>Objetivo:</b> OBX1.<br><b>Criterios de evaluación:</b> CA1.1, CA1.2 y CA1.3.</p>
+        <p>Competencias clave movilizadas: <b>STEM, CD, CPSAA y CE</b> (según el Anexo I del currículo).</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px"><h5>📦 Producto final — "Kit del Servicio Técnico Digital"</h5>
+      <p style="font-size:.9rem;color:var(--muted)">Dossier digital + defensa oral, por equipo. El <b>formato es a elección</b> (documento, presentación, vídeo o web) para respetar los distintos modos de expresión (DUA). Consta de cinco piezas:</p>
+      <div class="prod">
+        <div class="prod-item"><b>1 · Ficha técnica</b> de un equipo del aula: componentes, función y modelo entrada–proceso–almacenamiento–salida. <span style="color:var(--green)">CA1.3</span></div>
+        <div class="prod-item"><b>2 · Guía del SO</b>: configuración del sistema y del entorno de usuario, incluida la accesibilidad. <span style="color:var(--green)">CA1.2</span></div>
+        <div class="prod-item"><b>3 · Manual de red</b>: esquema de red (simulada), dispositivos, IP/SSID/DNS y configuración segura WPA2/WPA3. <span style="color:var(--green)">CA1.1</span></div>
+        <div class="prod-item"><b>4 · Protocolo de averías</b>: diagrama de decisión que resuelve 2 casos reales. <span style="color:var(--green)">CA1.3</span></div>
+        <div class="prod-item"><b>5 · Campaña sostenible</b>: cartel o vídeo sobre reutilización (RAEE) y ahorro energético.</div>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:16px">
+      <div class="card"><h5>♿ Diseño Universal para el Aprendizaje (DUA)</h5><ul>
+        <li><b>Representación</b>: mismo contenido en infografía visual, textos, vídeos y esquemas.</li>
+        <li><b>Acción y expresión</b>: el producto puede entregarse como guía, vídeo, web o exposición oral.</li>
+        <li><b>Implicación</b>: reto local con utilidad real, roles cooperativos y capacidad de elección.</li>
+      </ul></div>
+      <div class="card"><h5>🤝 Atención a la diversidad</h5><ul>
+        <li>Roles cooperativos ajustados a las fortalezas de cada alumno/a.</li>
+        <li>Tareas escalables (nivel base y ampliación) y apoyos visuales.</li>
+        <li>Rúbricas y guías de trabajo claras desde el inicio.</li>
+        <li>Tutoría entre iguales y refuerzo dentro del equipo.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- TEMPORALIZACIÓN -->
+<section id="tempo">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">02</div><h2>Temporalización · 10 sesiones</h2></div>
+    <p class="sec-sub">Aproximadamente 4-5 semanas (2-3 sesiones semanales de ~50 min). Haz clic en cada sesión para ver objetivo, actividad, agrupamiento y evidencia de evaluación.</p>
+    <div class="tl" id="tl">
+
+      <div class="ses open"><div class="ses-h"><div class="ses-n">1</div><div><div class="ses-t">Lanzamiento del reto<span class="phase ph-ini">Inicio</span></div></div><div class="ses-tag">Gran grupo</div></div>
+        <div class="ses-b">
+          <p><span class="lab">Objetivo:</span> activar conocimientos previos y comprender el reto.</p>
+          <p><span class="lab">Actividad:</span> presentación del "Servicio Técnico Digital del IES". Lluvia de ideas y cuestionario inicial (¿qué sé hacer con un ordenador?). Formación de las 3 brigadas y reparto de roles.</p>
+          <p><span class="lab">Evidencia:</span> diagnóstico inicial + contrato de equipo.</p>
+        </div></div>
+
+      <div class="ses"><div class="ses-h"><div class="ses-n">2</div><div><div class="ses-t">Hardware: arquitectura y componentes<span class="phase ph-des">Desarrollo</span></div></div><div class="ses-tag">CA1.3</div></div>
+        <div class="ses-b">
+          <p><span class="lab">Objetivo:</span> identificar los componentes y el modelo entrada-proceso-almacenamiento-salida.</p>
+          <p><span class="lab">Actividad:</span> exploración del <i>Explorador de hardware</i> de la infografía. Reto de emparejar componente-función. Introducción a la ficha técnica.</p>
+          <p><span class="lab">Evidencia:</span> ficha de componentes completada por parejas.</p>
+        </div></div>
+
+      <div class="ses"><div class="ses-h"><div class="ses-n">3</div><div><div class="ses-t">Hardware real: la ficha técnica del equipo<span class="phase ph-des">Desarrollo</span></div></div><div class="ses-tag">CA1.3</div></div>
+        <div class="ses-b">
+          <p><span class="lab">Objetivo:</span> reconocer los componentes reales del ordenador del aula.</p>
+          <p><span class="lab">Actividad:</span> uso de herramientas del sistema (Información del sistema / Administrador de tareas) para identificar CPU, RAM y almacenamiento. Elaboración de la <b>ficha técnica</b> (producto 1).</p>
+          <p><span class="lab">Evidencia:</span> ficha técnica del equipo del aula.</p>
+        </div></div>
+
+      <div class="ses"><div class="ses-h"><div class="ses-n">4</div><div><div class="ses-t">Sistemas operativos: funciones y arranque<span class="phase ph-des">Desarrollo</span></div></div><div class="ses-tag">CA1.2</div></div>
+        <div class="ses-b">
+          <p><span class="lab">Objetivo:</span> comprender qué es un SO, sus funciones, el arranque y los tipos.</p>
+          <p><span class="lab">Actividad:</span> pestañas de la sección SO. Comparativa Windows/Linux/Android. Demostración del proceso de instalación (vídeo o máquina virtual).</p>
+          <p><span class="lab">Evidencia:</span> esquema de las funciones del SO.</p>
+        </div></div>
+
+      <div class="ses"><div class="ses-h"><div class="ses-n">5</div><div><div class="ses-t">SO: entorno de usuario y archivos<span class="phase ph-des">Desarrollo</span></div></div><div class="ses-tag">CA1.2</div></div>
+        <div class="ses-b">
+          <p><span class="lab">Objetivo:</span> configurar el entorno de usuario y organizar la información.</p>
+          <p><span class="lab">Actividad:</span> configuración de accesibilidad (tamaño de texto, contraste), creación de una estructura de carpetas del proyecto y normas de nomenclatura. Redacción de la <b>guía del SO</b> (producto 2).</p>
+          <p><span class="lab">Evidencia:</span> guía de configuración + estructura de carpetas.</p>
+        </div></div>
+
+      <div class="ses"><div class="ses-h"><div class="ses-n">6</div><div><div class="ses-t">Redes: conceptos y configuración del equipo<span class="phase ph-des">Desarrollo</span></div></div><div class="ses-tag">CA1.1</div></div>
+        <div class="ses-b">
+          <p><span class="lab">Objetivo:</span> conocer dispositivos de red e identificadores (IP, SSID, DNS).</p>
+          <p><span class="lab">Actividad:</span> diagrama de red interactivo. Consulta de la configuración de red del equipo del aula (<span class="kbd">ipconfig</span> / <span class="kbd">ip a</span>) e interpretación de la IP.</p>
+          <p><span class="lab">Evidencia:</span> captura comentada de la configuración de red.</p>
+        </div></div>
+
+      <div class="ses"><div class="ses-h"><div class="ses-n">7</div><div><div class="ses-t">Redes: monta tu red doméstica (simulador)<span class="phase ph-des">Desarrollo</span></div></div><div class="ses-tag">CA1.1</div></div>
+        <div class="ses-b">
+          <p><span class="lab">Objetivo:</span> configurar y conectar una red local de forma autónoma y segura.</p>
+          <p><span class="lab">Actividad:</span> con el <b>simulador NetLab</b> (archivo <span class="kbd">simulador-red.html</span> de esta misma carpeta, con sus <b>7 retos</b>) se monta y conecta una red: dispositivos, SSID, contraseña y cifrado WPA2/WPA3. Los retos de NetLab guían la elaboración del <b>manual de red</b> (producto 3). <a href="simulador-red.html" style="color:var(--cyan);font-weight:700">▶ Abrir NetLab</a></p>
+          <p><span class="lab">Evidencia:</span> archivo de la red simulada + manual.</p>
+        </div></div>
+
+      <div class="ses"><div class="ses-h"><div class="ses-n">8</div><div><div class="ses-t">IoT y sostenibilidad digital<span class="phase ph-des">Desarrollo</span></div></div><div class="ses-tag">Transversal</div></div>
+        <div class="ses-b">
+          <p><span class="lab">Objetivo:</span> comprender el IoT y adquirir hábitos de reutilización y ahorro energético.</p>
+          <p><span class="lab">Actividad:</span> investigación sobre un dispositivo IoT/wearable y sus riesgos. Diseño de la <b>campaña de sostenibilidad</b> (producto 5): reutilización (RAEE) y ahorro energético.</p>
+          <p><span class="lab">Evidencia:</span> borrador de la campaña (cartel o guion de vídeo).</p>
+        </div></div>
+
+      <div class="ses"><div class="ses-h"><div class="ses-n">9</div><div><div class="ses-t">Diagnóstico de averías y montaje del Kit<span class="phase ph-des">Desarrollo</span></div></div><div class="ses-tag">CA1.3</div></div>
+        <div class="ses-b">
+          <p><span class="lab">Objetivo:</span> aplicar el método de diagnóstico y ensamblar el producto final.</p>
+          <p><span class="lab">Actividad:</span> simulador de averías (resolver 2 casos) y redacción del <b>protocolo de averías</b> (producto 4). Ensamblaje y ensayo del "Kit del Servicio Técnico".</p>
+          <p><span class="lab">Evidencia:</span> protocolo de averías + Kit montado.</p>
+        </div></div>
+
+      <div class="ses"><div class="ses-h"><div class="ses-n">10</div><div><div class="ses-t">Defensa del Kit y evaluación<span class="phase ph-fin">Cierre</span></div></div><div class="ses-tag">Coevaluación</div></div>
+        <div class="ses-b">
+          <p><span class="lab">Objetivo:</span> comunicar el producto y reflexionar sobre lo aprendido.</p>
+          <p><span class="lab">Actividad:</span> defensa oral del Kit ante los otros equipos (audiencia). Coevaluación con rúbrica y diana de autoevaluación. Cierre y transferencia.</p>
+          <p><span class="lab">Evidencia:</span> exposición + autoevaluación y coevaluación.</p>
+        </div></div>
+
+    </div>
+  </div>
+</section>
+
+<!-- RÚBRICA -->
+<section id="rubrica">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-num">03</div><h2>Rúbrica competencial por criterio</h2></div>
+    <p class="sec-sub">Evaluación por criterios de evaluación del Bloque 1. Cuatro niveles de logro. Elige un criterio:</p>
+
+    <div class="rub-tabs" id="rubTabs">
+      <div class="rtab active" data-r="ca11">CA1.1 · Redes</div>
+      <div class="rtab" data-r="ca12">CA1.2 · Sistemas operativos</div>
+      <div class="rtab" data-r="ca13">CA1.3 · Averías y hardware</div>
+    </div>
+
+    <div class="rpane show" id="rp-ca11">
+      <div class="crit-desc"><b>CA1.1.</b> Conectar dispositivos y gestionar redes locales aplicando los conocimientos y procesos asociados a sistemas de comunicación con y sin cables, con autonomía y de forma activa. <b>(OBX1 · STEM, CD)</b></div>
+      <div class="rub-wrap"><table class="rub-table">
+        <thead><tr><th>Dimensión</th><th class="n1">Nivel 1 · Iniciado</th><th class="n2">Nivel 2 · En desarrollo</th><th class="n3">Nivel 3 · Consolidado</th><th class="n4">Nivel 4 · Avanzado</th></tr></thead>
+        <tbody>
+          <tr><td class="dim">Dispositivos e identificadores de red</td>
+            <td>Reconoce con ayuda algún dispositivo (router) pero confunde IP, SSID y DNS.</td>
+            <td>Identifica los dispositivos básicos y algún identificador con apoyo del material.</td>
+            <td>Identifica correctamente router, switch y AP y explica IP, SSID y DNS.</td>
+            <td>Explica con precisión la función de cada dispositivo e identificador y los relaciona en el recorrido de los datos.</td></tr>
+          <tr><td class="dim">Configuración y conexión de la red (segura)</td>
+            <td>No completa la configuración de la red simulada.</td>
+            <td>Monta una red simple con ayuda; la seguridad es incompleta.</td>
+            <td>Configura y conecta la red de forma autónoma con cifrado WPA2/WPA3 y contraseña.</td>
+            <td>Configura la red con autonomía, justifica las decisiones de seguridad y resuelve incidencias de conexión.</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="rpane" id="rp-ca12">
+      <div class="crit-desc"><b>CA1.2.</b> Instalar y mantener sistemas operativos configurando sus características en función de las necesidades personales. <b>(OBX1 · CD, CPSAA)</b></div>
+      <div class="rub-wrap"><table class="rub-table">
+        <thead><tr><th>Dimensión</th><th class="n1">Nivel 1 · Iniciado</th><th class="n2">Nivel 2 · En desarrollo</th><th class="n3">Nivel 3 · Consolidado</th><th class="n4">Nivel 4 · Avanzado</th></tr></thead>
+        <tbody>
+          <tr><td class="dim">Comprensión del SO, arranque e instalación</td>
+            <td>Confunde SO y aplicaciones; no describe el arranque.</td>
+            <td>Describe funciones básicas del SO y las fases de instalación con apoyo.</td>
+            <td>Explica funciones, arranque (UEFI/BIOS) y proceso de instalación, y compara tipos de SO.</td>
+            <td>Explica el proceso con rigor, justifica la elección de un SO y relaciona software libre/propietario.</td></tr>
+          <tr><td class="dim">Configuración de usuario, accesibilidad y archivos</td>
+            <td>No configura el entorno ni organiza los archivos.</td>
+            <td>Realiza ajustes básicos y una organización de carpetas simple con ayuda.</td>
+            <td>Configura el entorno (incluida accesibilidad) y organiza los archivos con criterio propio.</td>
+            <td>Personaliza el entorno de forma óptima, aplica nomenclatura y copia de seguridad, y lo documenta para otros.</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="rpane" id="rp-ca13">
+      <div class="crit-desc"><b>CA1.3.</b> Identificar y resolver problemas técnicos sencillos analizando componentes y funciones de los dispositivos, evaluando las soluciones de manera crítica y, si es necesario, reformulando el procedimiento. <b>(OBX1 · STEM, CPSAA, CE)</b></div>
+      <div class="rub-wrap"><table class="rub-table">
+        <thead><tr><th>Dimensión</th><th class="n1">Nivel 1 · Iniciado</th><th class="n2">Nivel 2 · En desarrollo</th><th class="n3">Nivel 3 · Consolidado</th><th class="n4">Nivel 4 · Avanzado</th></tr></thead>
+        <tbody>
+          <tr><td class="dim">Identificación de componentes y su función</td>
+            <td>Nombra pocos componentes y sin relacionarlos con su función.</td>
+            <td>Identifica los componentes principales y su función básica con apoyo.</td>
+            <td>Identifica los componentes y explica su función y su papel en el sistema.</td>
+            <td>Relaciona componentes, síntomas y funciones, y anticipa consecuencias de un fallo.</td></tr>
+          <tr><td class="dim">Método de diagnóstico y resolución</td>
+            <td>Actúa por ensayo-error sin método.</td>
+            <td>Sigue algunos pasos del método con ayuda; no evalúa el resultado.</td>
+            <td>Aplica el método (observar-aislar-probar-verificar) y evalúa la solución.</td>
+            <td>Aplica el método con autonomía, evalúa críticamente y reformula el procedimiento cuando falla.</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="calif">
+      <div class="calif-item"><div class="pc">60%</div><p>Producto final "Kit" (rúbrica por criterios)</p></div>
+      <div class="calif-item"><div class="pc">25%</div><p>Proceso y trabajo en equipo (observación y diario)</p></div>
+      <div class="calif-item"><div class="pc">15%</div><p>Autoevaluación y coevaluación</p></div>
+    </div>
+    <p style="font-size:.8rem;color:var(--muted);margin-top:14px">🧰 <b>Instrumentos de evaluación:</b> rúbrica competencial, lista de cotejo de los productos, observación directa (diario docente), diana de autoevaluación y coevaluación entre iguales. Los niveles pueden asociarse a la escala Insuficiente / Suficiente-Bien / Notable / Sobresaliente.</p>
+  </div>
+</section>
+
+
+<footer>
+  <div class="wrap">
+    <div><b>Situación de aprendizaje · Dispositivos digitales</b> — Materia de Dixitalización · 4.º ESO (LOMLOE)</div>
+    <div class="src">Alineada con el Bloque 1 «Dispositivos dixitais, sistemas operativos e de comunicación» (objetivo OBX1; criterios CA1.1, CA1.2 y CA1.3). El bloque de redes se trabaja con el simulador NetLab (simulador-red.html), con 7 retos. Recurso de aula de elaboración propia, verificado con el documento curricular aportado.</div>
+    <div style="margin-top:16px;font-size:.82rem;color:var(--ink)"><b>Creado por Susana Oubiña Falcón y Claude (Opus 4.8)</b></div>
+    <div class="src" style="margin-top:2px">Material educativo para la materia de Digitalización · 4.º ESO</div>
+  </div>
+</footer>
+
+<script>
+/* Accordion de sesiones */
+document.querySelectorAll('.ses-h').forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('open')));
+/* Pestañas de rúbrica */
+document.querySelectorAll('.rtab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.rtab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.querySelectorAll('.rpane').forEach(p=>p.classList.remove('show'));
+  document.getElementById('rp-'+t.dataset.r).classList.add('show');
+}));
+</script>
+
+</body>
+</html>
