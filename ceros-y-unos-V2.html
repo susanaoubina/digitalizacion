@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body>
+<title>Ceros y Unos V2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Chivo:wght@700;900&family=JetBrains+Mono:wght@400;600;700&display=swap">
+<style>
+:root{
+  --bg:#EDF1F5; --panel:#FFFFFF; --well:#F5F7FA; --ink:#15202B; --muted:#56626F; --line:#D2D9E1;
+  --led:#E08E00; --led-glow:rgba(232,154,0,.45); --led-off:#C9D1DA;
+  --sig:#2356C4; --sig-soft:rgba(35,86,196,.10); --amb-soft:rgba(224,142,0,.13);
+  --ok:#1C7F46; --ok-soft:rgba(28,127,70,.12); --bad:#BD3A2C; --bad-soft:rgba(189,58,44,.10);
+  --display:"Chivo",system-ui,sans-serif; --body:"Atkinson Hyperlegible",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;
+  --bg:#0D131A; --panel:#151D27; --well:#0F161E; --ink:#E4EAF0; --muted:#95A2B0; --line:#283441;
+  --led:#FFB229; --led-glow:rgba(255,178,41,.5); --led-off:#2A3542;
+  --sig:#7AA2FF; --sig-soft:rgba(122,162,255,.14); --amb-soft:rgba(255,178,41,.14);
+  --ok:#46C57C; --ok-soft:rgba(70,197,124,.14); --bad:#F2735F; --bad-soft:rgba(242,115,95,.14);
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0D131A; --panel:#151D27; --well:#0F161E; --ink:#E4EAF0; --muted:#95A2B0; --line:#283441;
+  --led:#FFB229; --led-glow:rgba(255,178,41,.5); --led-off:#2A3542;
+  --sig:#7AA2FF; --sig-soft:rgba(122,162,255,.14); --amb-soft:rgba(255,178,41,.14);
+  --ok:#46C57C; --ok-soft:rgba(70,197,124,.14); --bad:#F2735F; --bad-soft:rgba(242,115,95,.14);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;padding:0 16px;}
+.wrap{max-width:1240px;margin:0 auto;padding-block:24px 56px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 24px;margin-bottom:20px}
+.brand h1{font-family:var(--display);font-weight:900;font-size:clamp(30px,5vw,44px);line-height:1;margin:0;letter-spacing:-.01em}
+.brand h1 .v2{font-size:.45em;vertical-align:.45em;color:var(--sig);border:2px solid var(--sig);border-radius:6px;padding:0 6px;margin-left:.15em}
+.brand h1 .b{font-family:var(--mono);font-weight:700;color:var(--led);font-size:.62em;vertical-align:.2em;margin-left:.3em}
+.brand p{margin:6px 0 0;color:var(--muted)}
+nav.tabs{display:flex;flex-wrap:wrap;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px}
+nav.tabs button{font:600 14px var(--body);border:0;background:transparent;color:var(--muted);padding:8px 12px;border-radius:7px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+nav.tabs button:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--sig);outline-offset:2px}
+.intro{margin:0 0 18px;color:var(--muted);font-size:17px;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--led);border-radius:10px;padding:14px 18px}
+.intro strong{color:var(--ink)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+.grid{display:grid;gap:16px}
+h2{font-family:var(--display);font-weight:700;font-size:20px;margin:0 0 4px;text-wrap:balance}
+h3{font-family:var(--display);font-weight:700;font-size:16px;margin:0 0 10px}
+.label{font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.btn{font:600 14px var(--body);border:1px solid var(--line);background:var(--well);color:var(--ink);padding:8px 14px;border-radius:8px;cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--sig);border-color:var(--sig);color:#fff}
+[data-theme="dark"] .btn.primary{color:#0D131A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.primary{color:#0D131A}}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{font:600 13px var(--body);border:1px solid var(--line);background:transparent;color:var(--muted);padding:6px 12px;border-radius:99px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--sig-soft);border-color:var(--sig);color:var(--sig)}
+
+/* ---------- BITS ---------- */
+.board{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;background:var(--well);border:1px solid var(--line);border-radius:12px;padding:18px 12px}
+.nibble{display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px;border-radius:10px}
+.nibble.hi{background:var(--sig-soft)} .nibble.lo{background:var(--amb-soft)}
+.nibble .bits{display:flex;gap:6px}
+.bit{display:flex;flex-direction:column;align-items:center;gap:6px;width:52px;border:0;background:transparent;color:var(--ink);cursor:pointer;padding:4px 0;font-family:var(--mono)}
+.bit .pv{font-size:15px;font-weight:700}
+.bit .pw{font-size:11px;color:var(--muted)}
+.bit .led{width:22px;height:22px;border-radius:50%;background:var(--led-off);transition:background .15s,box-shadow .15s}
+.bit[aria-pressed="true"] .led{background:var(--led);box-shadow:0 0 14px 3px var(--led-glow)}
+.bit .sw{width:34px;height:52px;border-radius:8px;background:var(--panel);border:1px solid var(--line);position:relative}
+.bit .sw::after{content:"";position:absolute;left:4px;right:4px;height:20px;bottom:4px;border-radius:5px;background:var(--muted);transition:bottom .15s,background .15s}
+.bit[aria-pressed="true"] .sw::after{bottom:26px;background:var(--led)}
+.bit .d{font-size:22px;font-weight:700}
+.bit[aria-pressed="false"] .d{color:var(--muted)}
+.nibble .hx{font:700 13px var(--mono);color:var(--muted)}
+.nibble .hx b{font-size:20px;color:var(--ink)}
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:16px}
+.ro{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--panel)}
+.ro .v{font:700 26px var(--mono);font-variant-numeric:tabular-nums;margin-top:2px;word-break:break-all}
+.ro .s{font-size:13px;color:var(--muted);margin-top:2px;font-family:var(--mono)}
+.hextable{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+@media (max-width:560px){.hextable{grid-template-columns:repeat(4,1fr)}}
+.hc{border:1px solid var(--line);border-radius:8px;padding:6px 4px;text-align:center;font-family:var(--mono)}
+.hc b{display:block;font-size:18px}
+.hc span{font-size:12px;color:var(--muted)}
+.hc.hi{border-color:var(--sig);background:var(--sig-soft)}
+.hc.lo{border-color:var(--led);background:var(--amb-soft)}
+.hc.hi.lo{background:linear-gradient(135deg,var(--sig-soft) 50%,var(--amb-soft) 50%)}
+.hxs{font:12px var(--mono);color:var(--muted);margin-top:-4px}
+.hexhow{margin-top:16px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:820px){.steps{grid-template-columns:1fr}}
+.stp{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--well);display:flex;flex-direction:column;gap:6px}
+.stp p{margin:0;font-size:15px}
+.stv{margin-top:auto;padding-top:8px;border-top:1px dashed var(--line);font-size:15px}
+.stv .mono{font-size:20px;font-weight:700}.stv .mono.big{font-size:34px}
+.stv div.mono{font-size:15px}
+.t-hi{color:var(--sig)}.t-lo{color:var(--led)}
+.check{margin:14px 0 0;padding:10px 14px;border-radius:8px;background:var(--ok-soft);font-size:15px}
+.two{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;margin-top:16px}
+@media (max-width:820px){.two{grid-template-columns:1fr}}
+.rgb{display:grid;gap:10px}
+.rgbrow{display:grid;grid-template-columns:22px 1fr 150px;gap:10px;align-items:center;font-family:var(--mono);font-size:13px}
+.rgbrow input{width:100%}
+.rgbrow span{white-space:pre}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.swatch{height:64px;border-radius:10px;border:1px solid var(--line);display:flex;align-items:flex-end;padding:8px 10px;font:700 18px var(--mono)}
+.swatch span{background:var(--panel);padding:2px 8px;border-radius:6px}
+
+/* ---------- TEXTO ---------- */
+.field{width:100%;font:500 20px var(--mono);padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--well);color:var(--ink)}
+.tiles{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.tile{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel);min-width:92px}
+.tile.multi{border-color:var(--led);background:var(--amb-soft)}
+.tile .ch{font:700 28px var(--mono);line-height:1.1}
+.tile .by{font:600 13px var(--mono);margin-top:6px;display:grid;gap:2px;white-space:nowrap}
+.tile .n{font-size:11px;color:var(--muted);margin-top:4px}
+.note{margin-top:16px;border:1px solid var(--led);background:var(--amb-soft);border-radius:10px;padding:14px 16px;max-width:78ch}
+.note p{margin:0 0 10px}.note ul{margin:0 0 10px;padding-left:20px}.note li{margin-bottom:2px}
+.pre{color:var(--sig);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.login .lf{display:flex;flex-direction:column;gap:4px;flex:1 1 260px}
+.login .field{font-size:17px;padding:10px 12px}
+.who{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.who b{font-size:17px}
+table.rp td:not(:first-child),table.rp th:not(:first-child){text-align:right}
+.stream{font:13px/1.8 var(--mono);word-break:break-all;background:var(--well);border:1px solid var(--line);border-radius:10px;padding:12px;max-height:180px;overflow:auto}
+.stats{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:12px;font-family:var(--mono);font-size:14px}
+.stats b{font-size:20px}
+
+/* ---------- RETOS ---------- */
+.score{display:flex;gap:20px;flex-wrap:wrap}
+.score div{font-family:var(--mono)} .score b{font-size:24px;display:block}
+.qcard{margin-top:16px;border:1px solid var(--line);border-radius:12px;padding:22px;background:var(--well);text-align:center}
+.qcard .qp{color:var(--muted);font-weight:700}
+.qcard .qv{font:700 clamp(26px,6vw,46px) var(--mono);margin:10px 0 4px;word-break:break-word;letter-spacing:.04em}
+.qcard .hint{font:13px var(--mono);color:var(--muted);min-height:1.4em}
+.answer{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.answer input{font:700 22px var(--mono);padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);width:min(320px,100%);text-align:center}
+.fb{margin-top:14px;border-radius:10px;padding:12px 14px;text-align:left;font-size:15px}
+.fb.ok{background:var(--ok-soft);color:var(--ok)} .fb.bad{background:var(--bad-soft);color:var(--bad)}
+.fb .ex{color:var(--ink);font-family:var(--mono);font-size:13px;margin-top:6px}
+
+/* ---------- CPU ---------- */
+.cpu{display:grid;grid-template-columns:1fr 1.3fr 1.2fr;gap:14px}
+@media (max-width:920px){.cpu{grid-template-columns:1fr}}
+.src{font:14px/1.9 var(--mono);background:var(--well);border:1px solid var(--line);border-radius:10px;padding:8px 0;margin:0;list-style:none}
+.src li{padding:0 12px;display:flex;gap:12px;border-left:3px solid transparent}
+.src li .ln{color:var(--muted);width:1.2em;text-align:right}
+.src li.cur{background:var(--amb-soft);border-left-color:var(--led)}
+.tw{overflow-x:auto}
+table.mem{width:100%;border-collapse:collapse;font:13px var(--mono);font-variant-numeric:tabular-nums}
+table.mem th{text-align:left;font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:6px;border-bottom:1px solid var(--line)}
+table.mem td{padding:7px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.mem tr.cur td{background:var(--amb-soft)}
+.opc{color:var(--sig);font-weight:700}.arg{color:var(--led);font-weight:700}
+.regs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.reg{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--well)}
+.reg .v{font:700 16px var(--mono)}
+.reg .s{font:12px var(--mono);color:var(--muted)}
+.reg.flash{border-color:var(--led)}
+.phases{display:flex;gap:4px;margin:12px 0 8px}
+.phases span{flex:1;text-align:center;font:600 12px var(--body);padding:6px 4px;border-radius:6px;background:var(--well);color:var(--muted);border:1px solid var(--line)}
+.phases span.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.explain{border:1px solid var(--line);border-radius:10px;padding:12px;min-height:84px;font-size:15px;background:var(--panel)}
+.alu{font:14px/1.5 var(--mono);background:var(--well);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:8px;white-space:pre;overflow-x:auto}
+.screen{font:700 22px var(--mono);background:#0B0F0C;color:#7CF29A;border-radius:10px;padding:12px 14px;min-height:56px;margin-top:8px}
+.isa{font:13px var(--mono);display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin-top:6px}
+.cfg{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.cfg input,.cfg select{font:700 16px var(--mono);padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--well);color:var(--ink);width:72px}
+.cfg select{width:auto}
+footer{margin-top:28px;color:var(--muted);font-size:13px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="brand">
+    <h1>Ceros y Unos <span class="v2">V2</span><span class="b">01000011</span></h1>
+    <p>Cómo convierte un ordenador tus órdenes, tus letras y tus colores en bits.</p>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Módulos">
+    <button role="tab" id="t-bits" data-tab="bits" aria-selected="true">1 · Bits y bytes</button>
+    <button role="tab" id="t-texto" data-tab="texto" aria-selected="false">2 · Texto en binario</button>
+    <button role="tab" id="t-cpu" data-tab="cpu" aria-selected="false">3 · Dentro de la CPU</button>
+    <button role="tab" id="t-retos" data-tab="retos" aria-selected="false">4 · Retos</button>
+  </nav>
+</header>
+
+<!-- ================= BITS ================= -->
+<section id="p-bits" role="tabpanel">
+  <p class="intro">Un ordenador solo distingue dos estados: <strong>hay corriente (1)</strong> o <strong>no hay corriente (0)</strong>. Cada interruptor es un <strong>bit</strong>. Con 8 bits formamos un <strong>byte</strong>, que puede guardar 256 valores distintos (de 0 a 255). Pulsa los interruptores.</p>
+  <div class="panel">
+    <div class="board" id="board"></div>
+    <div class="row" style="justify-content:center;margin-top:12px">
+      <button class="btn" id="bMinus">−1</button>
+      <button class="btn" id="bPlus">+1</button>
+      <button class="btn" id="bCount">▶ Contar</button>
+      <button class="btn" id="bRand">Aleatorio</button>
+      <button class="btn" id="bZero">Todo a 0</button>
+    </div>
+    <div class="readouts">
+      <div class="ro"><div class="label">Binario (base 2)</div><div class="v" id="rBin"></div><div class="s">8 bits = 1 byte</div></div>
+      <div class="ro"><div class="label">Decimal (base 10)</div><div class="v" id="rDec"></div><div class="s" id="rSum"></div></div>
+      <div class="ro"><div class="label">Hexadecimal (base 16)</div><div class="v" id="rHex"></div><div class="s" id="rHexS"></div></div>
+      <div class="ro"><div class="label">Como letra (ASCII)</div><div class="v" id="rChr"></div><div class="s" id="rChrS"></div></div>
+    </div>
+  </div>
+  <div class="panel hexhow">
+    <h2>Del binario al hexadecimal, paso a paso</h2>
+    <p class="muted" style="margin:0 0 14px">Los números en binario son muy largos y es fácil equivocarse al leerlos. Por eso los informáticos usan el <b>hexadecimal</b> (base 16), que tiene 16 cifras: <span class="mono">0 1 2 3 4 5 6 7 8 9 A B C D E F</span>. Las letras sustituyen a los números del 10 al 15: <span class="mono">A=10 · B=11 · C=12 · D=13 · E=14 · F=15</span>. El truco es que <b>4 bits</b> tienen exactamente 16 combinaciones (de 0000 a 1111), así que <b>cada grupo de 4 bits se convierte en una sola cifra hexadecimal</b>. Mira cómo se hace con el número que tienes en los interruptores:</p>
+    <div class="steps">
+      <div class="stp"><div class="label">Paso 1 · Parte el byte en dos</div><p>Separa los 8 bits en dos grupos de 4. A cada grupo de 4 bits se le llama <em>nibble</em> («medio byte»).</p><div id="hx1" class="stv"></div></div>
+      <div class="stp"><div class="label">Paso 2 · Calcula cada grupo</div><p>Dentro de cada grupo, los bits valen <span class="mono">8 · 4 · 2 · 1</span>. Suma los que están a 1 y escribe el resultado con una cifra hex.</p><div id="hx2" class="stv"></div></div>
+      <div class="stp"><div class="label">Paso 3 · Júntalos</div><p>Pon las dos cifras una detrás de otra. Ese es tu byte en hexadecimal.</p><div id="hx3" class="stv"></div></div>
+    </div>
+    <p class="check" id="hxCheck"></p>
+  </div>
+  <div class="two">
+    <div class="panel">
+      <h3>Tabla de equivalencias: 4 bits = 1 cifra hex</h3>
+      <p class="muted" style="margin:0 0 12px;font-size:15px">Leer <span class="mono">11111111</span> es incómodo. Cada grupo de 4 bits (un <em>nibble</em>) tiene 16 combinaciones, justo las cifras del hexadecimal: 0–9 y A–F. Así un byte se escribe con solo 2 símbolos. En azul, la cifra de los primeros 4 bits; en ámbar, la de los últimos 4.</p>
+      <div class="hextable" id="hexTable"></div>
+    </div>
+    <div class="panel">
+      <h3>Hexadecimal en tu día a día: los colores</h3>
+      <p class="muted" style="margin:0 0 12px;font-size:15px">Cada píxel de tu pantalla mezcla rojo, verde y azul. Cada canal es un byte (0–255). Por eso en diseño web los colores se escriben como <span class="mono">#RRGGBB</span>.</p>
+      <div class="rgb">
+        <div class="rgbrow"><b style="color:#E0463A">R</b><input type="range" id="cR" min="0" max="255" value="255" aria-label="Rojo"><span id="oR"></span></div>
+        <div class="rgbrow"><b style="color:#2E9E57">G</b><input type="range" id="cG" min="0" max="255" value="140" aria-label="Verde"><span id="oG"></span></div>
+        <div class="rgbrow"><b style="color:#3563D9">B</b><input type="range" id="cB" min="0" max="255" value="0" aria-label="Azul"><span id="oB"></span></div>
+        <div class="swatch" id="sw"><span id="swT"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TEXTO ================= -->
+<section id="p-texto" role="tabpanel" hidden>
+  <p class="intro">Cuando escribes, el ordenador no guarda letras: guarda <strong>números</strong>. Cada carácter tiene un código (tabla <strong>ASCII / Unicode</strong>) y ese código se almacena en binario. Escribe lo que quieras.</p>
+  <div class="panel">
+    <label class="label" for="txt">Tu texto</label>
+    <input class="field" id="txt" value="¡Hola, 4ºESO!" maxlength="60" autocomplete="off">
+    <div class="row" style="margin-top:12px">
+      <span class="label">Ver en:</span>
+      <button class="chip" data-view="bin" aria-pressed="true">Binario</button>
+      <button class="chip" data-view="hex" aria-pressed="false">Hexadecimal</button>
+      <button class="chip" data-view="dec" aria-pressed="false">Decimal</button>
+    </div>
+    <div class="stats" id="tStats"></div>
+    <div class="tiles" id="tiles"></div>
+    <div class="note" id="utfNote">
+      <h3>¿Por qué algunas letras ocupan 2 bytes?</h3>
+      <p>Con 1 byte solo caben 256 combinaciones, y la tabla ASCII original (la de los ordenadores de los años 60) usa solo 128: las letras del inglés, los números y los signos básicos. No incluye <b>á, é, ñ, ¿, ¡, º, €</b> ni los emojis. Para poder escribir en cualquier idioma se usa <b>UTF‑8</b>, que guarda cada carácter en 1, 2, 3 o 4 bytes:</p>
+      <ul>
+        <li><b>1 byte</b>: letras sin tilde, números y signos básicos (A, b, 7, !, espacio).</li>
+        <li><b>2 bytes</b>: letras con tilde, ñ, ç, ¿, ¡, º, ª…</li>
+        <li><b>3 bytes</b>: el símbolo €, letras chinas o japonesas…</li>
+        <li><b>4 bytes</b>: los emojis 😀.</li>
+      </ul>
+      <p id="utfEx"></p>
+      <p class="muted" style="margin:0">Consecuencia práctica: «Año» ocupa 4 bytes y «Ano» solo 3. Por eso un mensaje en español ocupa un poco más que el mismo mensaje sin tildes.</p>
+    </div>
+  </div>
+  <div class="two">
+    <div class="panel">
+      <h3>Lo que viaja por el cable</h3>
+      <p class="muted" style="margin:0 0 10px;font-size:15px">Así se envía tu texto por WiFi o se guarda en el disco: una fila de ceros y unos.</p>
+      <div class="stream" id="stream"></div>
+    </div>
+    <div class="panel">
+      <h3>Descifra un mensaje</h3>
+      <p class="muted" style="margin:0 0 10px;font-size:15px">Pega o escribe bytes (grupos de 8 bits separados por espacios) y el ordenador los traduce a texto.</p>
+      <textarea class="field" id="dec" rows="3" style="font-size:15px;resize:vertical">01000010 01101001 01100101 01101110 00100001</textarea>
+      <div class="ro" style="margin-top:10px"><div class="label">Texto</div><div class="v" id="decOut"></div><div class="s" id="decErr"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CPU ================= -->
+<section id="p-cpu" role="tabpanel" hidden>
+  <p class="intro">Tu programa se traduce a <strong>instrucciones máquina</strong>: bytes guardados en la memoria. La CPU las procesa una a una repitiendo siempre el mismo ciclo: <strong>buscar → decodificar → ejecutar</strong>. En esta CPU de juguete cada instrucción ocupa 1 byte: los <span style="color:var(--sig);font-weight:700">4 primeros bits</span> dicen qué hacer y los <span style="color:var(--led);font-weight:700">4 últimos</span> son el dato.</p>
+  <div class="panel">
+    <div class="cfg">
+      <span class="label">Programa:</span>
+      <span class="mono">a =</span><input type="number" id="pA" min="0" max="15" value="5" aria-label="Valor de a">
+      <span class="mono">b =</span><input type="number" id="pB" min="0" max="15" value="3" aria-label="Valor de b">
+      <select id="pOp" aria-label="Operación"><option value="+">a + b</option><option value="-">a − b</option></select>
+      <span class="muted" style="font-size:13px" id="cfgNote">Números de 0 a 15: el dato solo tiene 4 bits.</span>
+    </div>
+    <div class="cpu">
+      <div>
+        <h3>1 · Tu programa</h3>
+        <ol class="src" id="src"></ol>
+        <h3 style="margin-top:16px">Juego de instrucciones</h3>
+        <div class="isa" id="isa"></div>
+      </div>
+      <div>
+        <h3>2 · Memoria RAM</h3>
+        <div class="tw"><table class="mem"><thead><tr><th>Dir.</th><th>Contenido (binario)</th><th>Hex</th><th>Significa</th></tr></thead><tbody id="mem"></tbody></table></div>
+        <h3 style="margin-top:16px">Pantalla</h3>
+        <div class="screen" id="screen">_</div>
+      </div>
+      <div>
+        <h3>3 · CPU</h3>
+        <div class="regs">
+          <div class="reg" id="gPC"><div class="label">PC · contador</div><div class="v"></div><div class="s"></div></div>
+          <div class="reg" id="gIR"><div class="label">IR · instrucción</div><div class="v"></div><div class="s"></div></div>
+          <div class="reg" id="gA"><div class="label">Registro A</div><div class="v"></div><div class="s"></div></div>
+          <div class="reg" id="gB"><div class="label">Registro B</div><div class="v"></div><div class="s"></div></div>
+        </div>
+        <div class="phases"><span id="ph0">Buscar</span><span id="ph1">Decodificar</span><span id="ph2">Ejecutar</span></div>
+        <div class="explain" id="explain"></div>
+        <div class="label" style="margin-top:10px">ALU · unidad aritmética</div>
+        <div class="alu" id="alu">Esperando una operación…</div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn primary" id="cStep">Paso ›</button>
+          <button class="btn" id="cRun">▶ Ejecutar todo</button>
+          <button class="btn" id="cReset">Reiniciar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RETOS ================= -->
+<section id="p-retos" role="tabpanel" hidden>
+  <p class="intro">Ponte a prueba. Escribe tu nombre, elige un tipo de reto y un nivel. Si fallas, verás cómo se resuelve paso a paso. Al terminar, descarga tu informe y entrégaselo a tu profe.</p>
+  <form class="panel login" id="login" autocomplete="off">
+    <h2>¿Quién eres?</h2>
+    <p class="muted" style="margin:0 0 12px">Tus resultados se guardan en este ordenador con tu nombre. Si vuelves otro día con el mismo nombre y grupo, seguirás donde lo dejaste.</p>
+    <div class="row" style="align-items:flex-end">
+      <div class="lf"><label class="label" for="uName">Nombre y apellidos</label><input class="field" id="uName" required maxlength="60" placeholder="p. ej. Lucía Pérez Otero"></div>
+      <div class="lf" style="flex:0 0 140px"><label class="label" for="uGroup">Grupo</label><input class="field" id="uGroup" required maxlength="12" placeholder="4º A"></div>
+      <button class="btn primary" type="submit" style="height:48px">Empezar</button>
+    </div>
+    <div id="uErr" class="muted" style="margin-top:8px"></div>
+  </form>
+  <div class="panel" id="game" hidden>
+    <div class="who"><span>Alumno/a: <b id="uShow"></b></span><button class="btn" type="button" id="uChange">Cambiar de alumno/a</button></div>
+    <div class="row" id="modes">
+      <button class="chip" data-mode="mix" aria-pressed="true">Mezcla</button>
+      <button class="chip" data-mode="b2d" aria-pressed="false">Binario → Decimal</button>
+      <button class="chip" data-mode="d2b" aria-pressed="false">Decimal → Binario</button>
+      <button class="chip" data-mode="h2d" aria-pressed="false">Hex → Decimal</button>
+      <button class="chip" data-mode="d2h" aria-pressed="false">Decimal → Hex</button>
+      <button class="chip" data-mode="b2h" aria-pressed="false">Binario → Hex</button>
+      <button class="chip" data-mode="msg" aria-pressed="false">Mensaje secreto</button>
+    </div>
+    <div class="row" style="margin-top:10px;justify-content:space-between">
+      <div class="row">
+        <span class="label">Nivel:</span>
+        <button class="chip" data-lvl="4" aria-pressed="true">Fácil · 4 bits</button>
+        <button class="chip" data-lvl="8" aria-pressed="false">Normal · 8 bits</button>
+      </div>
+      <div class="score">
+        <div><span class="label">Aciertos</span><b id="sOk">0</b></div>
+        <div><span class="label">Intentos</span><b id="sTot">0</b></div>
+        <div><span class="label">Racha</span><b id="sStr">0</b></div>
+        <div><span class="label">Mejor racha</span><b id="sBest">0</b></div>
+      </div>
+    </div>
+    <div class="qcard">
+      <div class="qp" id="qP"></div>
+      <div class="qv" id="qV"></div>
+      <div class="hint" id="qH"></div>
+      <form class="answer" id="qForm" autocomplete="off">
+        <input id="qIn" aria-label="Tu respuesta" placeholder="Tu respuesta">
+        <button class="btn primary" type="submit" id="qGo">Comprobar</button>
+        <button class="btn" type="button" id="qHint">Pista</button>
+        <button class="btn" type="button" id="qSkip">Otra</button>
+      </form>
+      <div id="qFb"></div>
+    </div>
+  </div>
+  <div class="panel" id="report" hidden style="margin-top:16px">
+    <div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div><h2>Mi informe</h2><p class="muted" style="margin:0" id="rpMeta"></p></div>
+      <div class="row">
+        <button class="btn primary" type="button" id="rpDown" hidden>Descargar informe (.csv)</button>
+        <button class="btn" type="button" id="rpCopy">Copiar resumen</button>
+        <button class="btn" type="button" id="rpReset">Borrar mis resultados</button>
+      </div>
+    </div>
+    <div id="rpMsg" class="muted" style="margin-top:8px;min-height:1.5em"></div>
+    <div class="tw"><table class="mem rp"><thead><tr><th>Tipo de reto</th><th>Aciertos</th><th>Intentos</th><th>% acierto</th></tr></thead><tbody id="rpBody"></tbody></table></div>
+    <details style="margin-top:12px"><summary class="label" style="cursor:pointer">Ver todas mis respuestas</summary><div class="tw"><table class="mem"><thead><tr><th>Hora</th><th>Reto</th><th>Pregunta</th><th>Mi respuesta</th><th>Solución</th><th></th></tr></thead><tbody id="rpLog"></tbody></table></div></details>
+    <textarea id="rpText" class="field" rows="6" style="font-size:13px;margin-top:12px" readonly hidden></textarea>
+  </div>
+</section>
+
+<footer>Digitalización · 4º ESO. Pestañas enlazables: añade #bits, #texto, #cpu o #retos al enlace.</footer>
+</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const pad=(n,l)=>n.toString(2).padStart(l,'0');
+const hx=n=>n.toString(16).toUpperCase();
+const nib=b=>b.length===8?b.slice(0,4)+' '+b.slice(4):b;
+
+/* ---------- Tabs ---------- */
+function showTab(t){
+  $$('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));
+  ['bits','texto','cpu','retos'].forEach(k=>$('#p-'+k).hidden=k!==t);
+  if(t!=='bits'&&counter){clearInterval(counter);counter=null;$('#bCount').textContent='▶ Contar'}
+  if(t!=='cpu'&&runT)stopRun();
+}
+$$('nav.tabs button').forEach(b=>b.onclick=()=>{showTab(b.dataset.tab);try{history.replaceState(null,'','#'+b.dataset.tab)}catch(e){}});
+const h0=location.hash.slice(1); if(['bits','texto','cpu','retos'].includes(h0)) showTab(h0);
+
+/* ---------- BITS ---------- */
+let val=65, counter=null;
+const sup=['⁰','¹','²','³','⁴','⁵','⁶','⁷'];
+(function buildBoard(){
+  let html='';
+  ['hi','lo'].forEach((g,gi)=>{
+    html+=`<div class="nibble ${g}"><div class="bits">`;
+    for(let k=0;k<4;k++){const i=gi*4+k,p=7-i;
+      html+=`<button class="bit" data-i="${i}" aria-pressed="false" aria-label="Bit de valor ${2**p}"><span class="pv">${2**p}</span><span class="pw">2${sup[p]}</span><span class="led"></span><span class="sw"></span><span class="d">0</span></button>`;}
+    html+=`</div><div class="hx">${g==='hi'?'Primeros 4 bits':'Últimos 4 bits'} → en hex: <b id="nb${gi}">0</b></div><div class="hxs" id="ns${gi}"></div></div>`;
+  });
+  $('#board').innerHTML=html;
+  $$('.bit').forEach(b=>b.onclick=()=>{val^=1<<(7-b.dataset.i);renderBits()});
+  let t='';for(let i=0;i<16;i++)t+=`<div class="hc" data-h="${i}"><b>${hx(i)}</b><span>${pad(i,4)}</span><br><span>${i}</span></div>`;
+  $('#hexTable').innerHTML=t;
+})();
+function charInfo(v){
+  if(v===32)return['␣','espacio'];
+  if(v<32)return['—','carácter de control: no se ve'];
+  if(v===127)return['—','DEL (borrar)'];
+  if(v<160)return['—','fuera del ASCII básico: código de control'];
+  if(v>127)return[String.fromCharCode(v),'fuera del ASCII básico. Ojo: al escribirla en un texto ocupa 2 bytes (mira la pestaña 2)'];
+  return[String.fromCharCode(v),'código ASCII '+v];
+}
+function renderBits(){
+  const b=pad(val,8);
+  $$('.bit').forEach(el=>{const on=b[el.dataset.i]==='1';el.setAttribute('aria-pressed',on);el.querySelector('.d').textContent=on?1:0});
+  const hi=val>>4, lo=val&15;
+  $('#nb0').textContent=hx(hi);$('#nb1').textContent=hx(lo);
+  const nsum=v=>{const p=[8,4,2,1].filter(w=>v&w);return p.length?(p.length>1?p.join(' + ')+' = ':'')+v:'0'};
+  $('#ns0').textContent=`${pad(hi,4)} → ${nsum(hi)}`;$('#ns1').textContent=`${pad(lo,4)} → ${nsum(lo)}`;
+  const dig=v=>v<10?`${v} → se escribe <b>${v}</b>`:`${v} → se escribe <b>${hx(v)}</b> (porque ${hx(v)} = ${v})`;
+  $('#hx1').innerHTML=`<span class="mono"><span class="t-hi">${pad(hi,4)}</span> <span class="t-lo">${pad(lo,4)}</span></span>`;
+  $('#hx2').innerHTML=`<div class="mono"><span class="t-hi">${pad(hi,4)}</span> = ${nsum(hi)}</div><div>${dig(hi)}</div><div class="mono" style="margin-top:6px"><span class="t-lo">${pad(lo,4)}</span> = ${nsum(lo)}</div><div>${dig(lo)}</div>`;
+  $('#hx3').innerHTML=`<span class="mono big"><span class="t-hi">${hx(hi)}</span><span class="t-lo">${hx(lo)}</span></span>`;
+  $('#hxCheck').innerHTML=`<b>Comprobación:</b> en hexadecimal la cifra de la izquierda vale 16 veces más. ${hx(hi)}×16 + ${hx(lo)}×1 = ${hi*16} + ${lo} = <b>${val}</b>, el mismo número que en decimal.`;
+  $('#rBin').textContent=nib(b);
+  $('#rDec').textContent=val;
+  const parts=[];for(let p=7;p>=0;p--)if(val&(1<<p))parts.push(2**p);
+  $('#rSum').textContent=parts.length?parts.join(' + ')+' = '+val:'ningún bit encendido = 0';
+  $('#rHex').textContent=hx(hi)+hx(lo);
+  $('#rHexS').textContent=`${hx(hi)}×16 + ${hx(lo)}×1 = ${hi*16}+${lo} = ${val}`;
+  const [c,s]=charInfo(val);$('#rChr').textContent=c;$('#rChrS').textContent=s;
+  $$('.hc').forEach(e=>{const h=+e.dataset.h;e.classList.toggle('hi',h===hi);e.classList.toggle('lo',h===lo)});
+}
+$('#bPlus').onclick=()=>{val=(val+1)&255;renderBits()};
+$('#bMinus').onclick=()=>{val=(val+255)&255;renderBits()};
+$('#bZero').onclick=()=>{val=0;renderBits()};
+$('#bRand').onclick=()=>{val=Math.floor(Math.random()*256);renderBits()};
+$('#bCount').onclick=()=>{
+  if(counter){clearInterval(counter);counter=null;$('#bCount').textContent='▶ Contar';return}
+  $('#bCount').textContent='❚❚ Parar';
+  counter=setInterval(()=>{val=(val+1)&255;renderBits()},550);
+};
+renderBits();
+function renderRGB(){
+  const r=+$('#cR').value,g=+$('#cG').value,bl=+$('#cB').value;
+  const f=v=>`${String(v).padStart(3,' ')} ${pad(v,8)} ${hx(v).padStart(2,'0')}`;
+  $('#oR').textContent=f(r);$('#oG').textContent=f(g);$('#oB').textContent=f(bl);
+  const code='#'+[r,g,bl].map(v=>hx(v).padStart(2,'0')).join('');
+  $('#sw').style.background=code;$('#swT').textContent=code;
+}
+['#cR','#cG','#cB'].forEach(s=>$(s).oninput=renderRGB);renderRGB();
+
+/* ---------- TEXTO ---------- */
+const enc=new TextEncoder();let view='bin';
+const fmt=b=>view==='bin'?pad(b,8):view==='hex'?hx(b).padStart(2,'0'):String(b);
+/* En binario, marca los bits de «aviso» de UTF-8: 110/1110/11110 en el primer byte, 10 en los de continuación */
+function fmtMarked(b,i,len){
+  if(view!=='bin'||len===1)return fmt(b);
+  const s=pad(b,8),k=i===0?len+1:2;
+  return `<span class="pre">${s.slice(0,k)}</span>${s.slice(k)}`;
+}
+function renderText(){
+  const chars=Array.from($('#txt').value);let all=[],html='',firstMulti=null;
+  chars.forEach(ch=>{
+    const by=[...enc.encode(ch)];all.push(...by);
+    const cp=ch.codePointAt(0);
+    if(by.length>1&&!firstMulti)firstMulti={ch,by,cp};
+    html+=`<div class="tile${by.length>1?' multi':''}"><div class="ch">${ch===' '?'␣':ch.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div><div class="by">${by.map((b,i)=>fmtMarked(b,i,by.length)).join('<br>')}</div><div class="n">código ${cp} · ${by.length} byte${by.length>1?'s':''}</div></div>`;
+  });
+  $('#tiles').innerHTML=html||'<span class="muted">Escribe algo arriba.</span>';
+  const note=$('#utfNote');note.hidden=!firstMulti;
+  if(firstMulti){
+    const {ch,by,cp}=firstMulti,n=by.length;
+    const pre=n===2?'110':n===3?'1110':'11110';
+    $('#utfEx').innerHTML=`<b>${ch.replace(/</g,'&lt;')}</b> tiene el código ${cp}, que no cabe en la tabla ASCII (0–127). Por eso se guarda en <b>${n} bytes</b>: `+
+      by.map((b,i)=>{const s=pad(b,8),k=i===0?n+1:2;return `<span class="mono"><span class="pre">${s.slice(0,k)}</span>${s.slice(k)}</span>`}).join(' ')+
+      `. El primer byte empieza por <span class="mono pre">${pre}</span> (${n} unos = «este carácter ocupa ${n} bytes») y ${n===2?'el siguiente empieza':'los siguientes empiezan'} por <span class="mono pre">10</span> («sigo siendo parte de la misma letra»). Los bits en negro son el código ${cp} escrito en binario: <span class="mono">${cp.toString(2)}</span>.`;
+  }
+  $('#stream').textContent=all.map(fmt).join(' ');
+  $('#tStats').innerHTML=`<span><b>${chars.length}</b> caracteres</span><span><b>${all.length}</b> bytes</span><span><b>${all.length*8}</b> bits</span>`;
+}
+$('#txt').oninput=renderText;
+$$('[data-view]').forEach(b=>b.onclick=()=>{view=b.dataset.view;$$('[data-view]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderText()});
+renderText();
+function decodeBin(){
+  let s=$('#dec').value.trim();$('#decErr').textContent='';
+  if(!s){$('#decOut').textContent='—';return}
+  if(/[^01\s]/.test(s)){$('#decOut').textContent='—';$('#decErr').textContent='Solo se admiten ceros, unos y espacios.';return}
+  let groups=s.split(/\s+/);
+  if(groups.length===1&&groups[0].length>8)groups=groups[0].match(/.{1,8}/g);
+  const bad=groups.find(g=>g.length>8);
+  if(bad){$('#decErr').textContent=`"${bad}" tiene más de 8 bits.`;$('#decOut').textContent='—';return}
+  const bytes=new Uint8Array(groups.map(g=>parseInt(g,2)));
+  $('#decOut').textContent=new TextDecoder().decode(bytes);
+  $('#decErr').textContent=groups.map(g=>parseInt(g,2)).join(' · ');
+}
+$('#dec').oninput=decodeBin;decodeBin();
+
+/* ---------- CPU ---------- */
+const ISA={0:['HALT','parar'],1:['LOAD A','guardar dato en A'],2:['LOAD B','guardar dato en B'],3:['ADD','A = A + B'],4:['SUB','A = A − B'],5:['OUT','mostrar A en pantalla']};
+$('#isa').innerHTML=Object.entries(ISA).map(([k,[m,d]])=>`<span class="opc">${pad(+k,4)}</span><span>${m} · <span class="muted">${d}</span></span>`).join('');
+let prog=[],cpu,runT=null;
+function clamp(id){let v=parseInt($(id).value);if(isNaN(v))v=0;v=Math.max(0,Math.min(15,v));$(id).value=v;return v}
+function buildProg(){
+  const x=clamp('#pA'),op=$('#pOp').value;let y=clamp('#pB');
+  $('#pB').max=op==='-'?x:15;
+  if(op==='-'&&y>x){y=x;$('#pB').value=x;$('#cfgNote').innerHTML='<b style="color:var(--bad)">En una resta, b no puede ser mayor que a:</b> esta CPU no conoce los números negativos. He puesto b = '+x+'.'}
+  else $('#cfgNote').textContent=op==='-'?'Números de 0 a 15. En la resta, b no puede ser mayor que a.':'Números de 0 a 15: el dato solo tiene 4 bits.';
+  prog=[{src:`a = ${x}`,op:1,arg:x},{src:`b = ${y}`,op:2,arg:y},{src:`a = a ${op==='+'?'+':'-'} b`,op:op==='+'?3:4,arg:0},{src:'print(a)',op:5,arg:0},{src:'# fin',op:0,arg:0}];
+  resetCPU();
+}
+function resetCPU(){
+  stopRun();
+  cpu={pc:0,ir:null,a:0,b:0,out:[],phase:0,halted:false,line:-1,flash:null};
+  $('#explain').innerHTML='Pulsa <b>Paso</b> para que la CPU empiece a trabajar. Primero <b>busca</b> en la memoria la instrucción que indica el contador de programa (PC).';
+  $('#alu').textContent='Esperando una operación…';
+  renderCPU(-1);
+}
+function renderCPU(phaseOn){
+  $('#src').innerHTML=prog.map((p,i)=>`<li class="${i===cpu.line?'cur':''}"><span class="ln">${i+1}</span><span>${p.src}</span></li>`).join('');
+  $('#mem').innerHTML=prog.map((p,i)=>`<tr class="${i===cpu.pc&&!cpu.halted?'cur':''}"><td>${pad(i,4)}</td><td><span class="opc">${pad(p.op,4)}</span> <span class="arg">${pad(p.arg,4)}</span></td><td>${hx(p.op*16+p.arg).padStart(2,'0')}</td><td>${ISA[p.op][0]}${p.op===1||p.op===2?' '+p.arg:''}</td></tr>`).join('');
+  const reg=(id,v,s)=>{$(id+' .v').innerHTML=v;$(id+' .s').textContent=s;$(id).classList.toggle('flash',cpu.flash===id)};
+  reg('#gPC',pad(cpu.pc,4),'dirección '+cpu.pc);
+  reg('#gIR',cpu.ir===null?'—':`<span class="opc">${pad(cpu.ir>>4,4)}</span> <span class="arg">${pad(cpu.ir&15,4)}</span>`,cpu.ir===null?'vacío':'hex '+hx(cpu.ir).padStart(2,'0'));
+  reg('#gA',nib(pad(cpu.a,8)),'decimal '+cpu.a);
+  reg('#gB',nib(pad(cpu.b,8)),'decimal '+cpu.b);
+  [0,1,2].forEach(i=>$('#ph'+i).classList.toggle('on',i===phaseOn));
+  $('#screen').textContent=cpu.out.length?cpu.out.join('\n'):'_';
+  $('#cStep').disabled=cpu.halted;
+}
+function aluDraw(a,b,r,sym,note){
+  $('#alu').textContent=`   ${nib(pad(a,8))}   (${a})\n ${sym} ${nib(pad(b,8))}   (${b})\n ─────────────\n   ${nib(pad(r&255,8))}   (${r&255})${note?'\n'+note:''}`;
+}
+function step(){
+  if(cpu.halted)return;cpu.flash=null;
+  let ph=cpu.phase,t='';
+  if(ph===0){
+    cpu.ir=prog[cpu.pc].op*16+prog[cpu.pc].arg;cpu.flash='#gIR';
+    t=`<b>Buscar.</b> La CPU mira el PC (<span class="mono">${pad(cpu.pc,4)}</span>), va a esa dirección de memoria y copia el byte <span class="mono">${nib(pad(cpu.ir,8))}</span> al registro de instrucción (IR).`;
+    cpu.phase=1;
+  }else if(ph===1){
+    const o=cpu.ir>>4,a=cpu.ir&15;
+    t=`<b>Decodificar.</b> Separa el byte en dos partes: <span class="mono opc">${pad(o,4)}</span> es el código de operación → <b>${ISA[o][0]}</b> (${ISA[o][1]}). <span class="mono arg">${pad(a,4)}</span> es el dato → ${a}.`;
+    cpu.phase=2;
+  }else{
+    const o=cpu.ir>>4,a=cpu.ir&15;cpu.line=cpu.pc;
+    if(o===1){cpu.a=a;cpu.flash='#gA';t=`<b>Ejecutar.</b> Guarda ${a} (<span class="mono">${pad(a,8)}</span>) en el registro A.`}
+    else if(o===2){cpu.b=a;cpu.flash='#gB';t=`<b>Ejecutar.</b> Guarda ${a} (<span class="mono">${pad(a,8)}</span>) en el registro B.`}
+    else if(o===3){const r=cpu.a+cpu.b;aluDraw(cpu.a,cpu.b,r,'+',r>255?'¡Desbordamiento! No cabe en 8 bits.':'');cpu.a=r&255;cpu.flash='#gA';t=`<b>Ejecutar.</b> La ALU suma A y B bit a bit (como sumar a mano, pero con «me llevo 1» cuando 1+1=10) y guarda el resultado en A.`}
+    else if(o===4){const r=Math.max(0,cpu.a-cpu.b);aluDraw(cpu.a,cpu.b,r,'−','');cpu.a=r;cpu.flash='#gA';t=`<b>Ejecutar.</b> La ALU resta B de A bit a bit y guarda el resultado en A.`}
+    else if(o===5){cpu.out.push(cpu.a);t=`<b>Ejecutar.</b> Envía el contenido de A (<span class="mono">${pad(cpu.a,8)}</span>) a la pantalla, que lo muestra como ${cpu.a}.`}
+    else {cpu.halted=true;t=`<b>Ejecutar.</b> Instrucción HALT: el programa ha terminado. Tus ${prog.length-1} líneas de código se han convertido en ${prog.length} bytes de memoria y ${prog.length*3} pasos de la CPU. Un procesador real hace miles de millones de estos pasos por segundo.`;stopRun()}
+    if(!cpu.halted){cpu.pc++;}
+    cpu.phase=0;
+  }
+  $('#explain').innerHTML=t;renderCPU(ph);
+}
+function stopRun(){if(runT){clearInterval(runT);runT=null}$('#cRun').textContent='▶ Ejecutar todo'}
+$('#cStep').onclick=()=>{stopRun();step()};
+$('#cReset').onclick=resetCPU;
+$('#cRun').onclick=()=>{
+  if(runT){stopRun();return}
+  if(cpu.halted)resetCPU();
+  $('#cRun').textContent='❚❚ Pausa';runT=setInterval(step,1100);
+};
+['#pA','#pB','#pOp'].forEach(s=>$(s).onchange=buildProg);
+buildProg();
+
+/* ---------- RETOS ---------- */
+const WORDS=['HOLA','BIT','BYTE','CPU','RAM','WIFI','DATOS','ROBOT','PIXEL','RED','NUBE','CHIP','WEB','APP','CODIGO'];
+let mode='mix',lvl=4,q=null,answered=false,S={ok:0,tot:0,str:0,best:0};
+const rnd=n=>Math.floor(Math.random()*n);
+function sumExpl(n,bits){const b=pad(n,bits);const parts=[];for(let i=0;i<bits;i++)if(b[i]==='1')parts.push(2**(bits-1-i));return `${b} → ${parts.length?parts.join(' + '):'0'} = ${n}`}
+function hexExpl(n){return n<16?`${hx(n)} = ${n}`:`${hx(n)} → ${hx(n>>4)}×16 + ${hx(n&15)}×1 = ${(n>>4)*16} + ${n&15} = ${n}`}
+function newQ(){
+  const m=mode==='mix'?['b2d','d2b','h2d','d2h','b2h','msg'][rnd(6)]:mode;
+  const max=lvl===4?16:256,n=rnd(max-1)+1,bits=lvl;
+  answered=false;$('#qFb').innerHTML='';$('#qIn').value='';$('#qH').textContent='';$('#qGo').textContent='Comprobar';
+  if(m==='b2d')q={m,n,p:'¿Qué número decimal es?',v:nib(pad(n,bits)),hint:'Valores de cada posición: '+Array.from({length:bits},(_,i)=>2**(bits-1-i)).join(' · '),ex:sumExpl(n,bits)};
+  if(m==='d2b')q={m,n,p:`Escribe en binario (${bits} bits)`,v:n,hint:'Empieza por el valor más grande que quepa: '+Array.from({length:bits},(_,i)=>2**(bits-1-i)).join(' · '),ex:sumExpl(n,bits)};
+  if(m==='h2d')q={m,n,p:'¿Qué número decimal es este hexadecimal?',v:'0x'+hx(n),hint:'A=10 · B=11 · C=12 · D=13 · E=14 · F=15. La cifra de la izquierda vale ×16.',ex:hexExpl(n)};
+  if(m==='d2h')q={m,n,p:'Escribe en hexadecimal',v:n,hint:'Divide entre 16: el cociente es la 1ª cifra y el resto la 2ª. A=10 … F=15.',ex:hexExpl(n)};
+  if(m==='b2h')q={m,n,p:'Pásalo a hexadecimal (cada 4 bits = 1 cifra)',v:nib(pad(n,bits)),hint:'Traduce cada grupo de 4 bits por separado: 1010=A, 1111=F…',ex:(bits===8?`${pad(n>>4,4)} = ${hx(n>>4)} · ${pad(n&15,4)} = ${hx(n&15)}`:`${pad(n,4)} = ${hx(n)}`)+` → ${hx(n)}`};
+  if(m==='msg'){const w=WORDS[rnd(WORDS.length)];q={m,w,p:'Mensaje secreto: ¿qué palabra es? (letras mayúsculas ASCII)',v:[...w].map(c=>pad(c.charCodeAt(0),8)).join(' '),hint:'A = 01000001 (65). Cada letra siguiente suma 1: B = 66, C = 67… Z = 90.',ex:[...w].map(c=>`${c}=${c.charCodeAt(0)}`).join(' · ')}}
+  $('#qP').textContent=q.p;$('#qV').textContent=q.v;
+  $('#qIn').placeholder=m==='msg'?'palabra':m==='d2b'?'ceros y unos':m==='d2h'||m==='b2h'?'p. ej. 2F':'número';
+  if(!$('#p-retos').hidden&&!$('#game').hidden)$('#qIn').focus({preventScroll:true});
+}
+const MODES={b2d:'Binario → Decimal',d2b:'Decimal → Binario',h2d:'Hex → Decimal',d2h:'Decimal → Hex',b2h:'Binario → Hex',msg:'Mensaje secreto'};
+let U=null; // {name, group, S, log}
+const keyOf=(n,g)=>'cyu.v1.'+(n+'|'+g).toLowerCase().replace(/\s+/g,' ').trim();
+function store(){try{localStorage.setItem(keyOf(U.name,U.group),JSON.stringify(U))}catch(e){}}
+function loadUser(n,g){let d=null;try{d=JSON.parse(localStorage.getItem(keyOf(n,g))||'null')}catch(e){}
+  return d&&d.S&&Array.isArray(d.log)?d:{name:n,group:g,S:{ok:0,tot:0,str:0,best:0},log:[],since:new Date().toISOString()}}
+function renderScore(){const S=U.S;['ok','tot','str','best'].forEach(k=>$('#s'+k[0].toUpperCase()+k.slice(1)).textContent=S[k])}
+function check(){
+  if(answered){newQ();return}
+  const a=$('#qIn').value.trim();if(!a)return;
+  let ok=false;
+  if(q.m==='b2d'||q.m==='h2d')ok=/^\d+$/.test(a)&&parseInt(a,10)===q.n;
+  if(q.m==='d2b')ok=/^[01\s]+$/.test(a)&&parseInt(a.replace(/\s/g,''),2)===q.n;
+  if(q.m==='d2h'||q.m==='b2h')ok=/^(0x)?[0-9a-f]+$/i.test(a)&&parseInt(a.replace(/^0x/i,''),16)===q.n;
+  if(q.m==='msg')ok=a.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'')===q.w;
+  const S=U.S;S.tot++;if(ok){S.ok++;S.str++;S.best=Math.max(S.best,S.str)}else S.str=0;
+  const sol=q.m==='msg'?q.w:q.m==='d2b'?pad(q.n,lvl):(q.m==='d2h'||q.m==='b2h')?hx(q.n):q.n;
+  U.log.push({t:new Date().toISOString(),m:q.m,lvl:q.m==='msg'?8:lvl,q:String(q.v),a,sol:String(sol),ok,hint:!!q.hinted});
+  if(U.log.length>1000)U.log=U.log.slice(-1000);
+  store();
+  $('#qFb').innerHTML=`<div class="fb ${ok?'ok':'bad'}"><b>${ok?'¡Correcto!':'No es correcto. La respuesta es '+sol+'.'}</b><div class="ex">${q.ex}</div></div>`;
+  renderScore();renderReport();
+  answered=true;$('#qGo').textContent='Siguiente ›';
+}
+$('#qForm').onsubmit=e=>{e.preventDefault();check()};
+$('#qHint').onclick=()=>{$('#qH').textContent=q.hint;if(!answered)q.hinted=true};
+$('#qSkip').onclick=newQ;
+$$('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;$$('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',x===b));newQ()});
+$$('[data-lvl]').forEach(b=>b.onclick=()=>{lvl=+b.dataset.lvl;$$('[data-lvl]').forEach(x=>x.setAttribute('aria-pressed',x===b));newQ()});
+
+/* ---- Alumno/a e informe ---- */
+const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const fDate=iso=>new Date(iso).toLocaleDateString('es-ES');
+const fTime=iso=>new Date(iso).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+function stats(){const r={};Object.keys(MODES).forEach(k=>r[k]={ok:0,tot:0});U.log.forEach(l=>{r[l.m].tot++;if(l.ok)r[l.m].ok++});return r}
+const pct=(o,t)=>t?Math.round(o/t*100)+' %':'—';
+function renderReport(){
+  const r=stats(),S=U.S,hints=U.log.filter(l=>l.hint).length;
+  $('#rpMeta').textContent=`${U.name} · ${U.group} · desde el ${fDate(U.since)} · ${hints} pista${hints===1?'':'s'} usada${hints===1?'':'s'} · mejor racha ${S.best}`;
+  $('#rpBody').innerHTML=Object.keys(MODES).map(k=>`<tr><td>${MODES[k]}</td><td>${r[k].ok}</td><td>${r[k].tot}</td><td>${pct(r[k].ok,r[k].tot)}</td></tr>`).join('')+
+    `<tr><td><b>Total</b></td><td><b>${S.ok}</b></td><td><b>${S.tot}</b></td><td><b>${pct(S.ok,S.tot)}</b></td></tr>`;
+  $('#rpLog').innerHTML=U.log.slice().reverse().map(l=>`<tr><td>${fDate(l.t)} ${fTime(l.t)}</td><td>${MODES[l.m]}</td><td>${esc(l.q)}</td><td>${esc(l.a)}</td><td>${esc(l.sol)}</td><td style="color:var(--${l.ok?'ok':'bad'})">${l.ok?'✓':'✗'}${l.hint?' <span class="muted">(pista)</span>':''}</td></tr>`).join('')||'<tr><td colspan="6" class="muted">Aún no has respondido ningún reto.</td></tr>';
+}
+function summaryText(){
+  const r=stats(),S=U.S;
+  return [`CEROS Y UNOS · Informe de retos`,`Alumno/a: ${U.name}`,`Grupo: ${U.group}`,`Fecha del informe: ${new Date().toLocaleString('es-ES')}`,``,
+    ...Object.keys(MODES).map(k=>`${MODES[k]}: ${r[k].ok}/${r[k].tot} (${pct(r[k].ok,r[k].tot)})`),``,
+    `TOTAL: ${S.ok} aciertos de ${S.tot} intentos (${pct(S.ok,S.tot)})`,`Mejor racha: ${S.best}`,`Pistas usadas: ${U.log.filter(l=>l.hint).length}`].join('\n');
+}
+function csv(){
+  const c=v=>'"'+String(v).replace(/"/g,'""')+'"';
+  const rows=[['Alumno/a','Grupo','Fecha','Hora','Tipo de reto','Nivel (bits)','Pregunta','Respuesta','Solución','Correcta','Pista']];
+  U.log.forEach(l=>rows.push([U.name,U.group,fDate(l.t),fTime(l.t),MODES[l.m],l.lvl,l.q,l.a,l.sol,l.ok?'Sí':'No',l.hint?'Sí':'No']));
+  return '﻿'+rows.map(r=>r.map(c).join(';')).join('\r\n');
+}
+function startUser(n,g){
+  U=loadUser(n,g);store();
+  $('#login').hidden=true;$('#game').hidden=false;$('#report').hidden=false;
+  $('#uShow').textContent=`${U.name} (${U.group})`;
+  renderScore();renderReport();newQ();
+  try{sessionStorage.setItem('cyu.cur',JSON.stringify([n,g]))}catch(e){}
+}
+$('#login').onsubmit=e=>{e.preventDefault();
+  const n=$('#uName').value.trim().replace(/\s+/g,' '),g=$('#uGroup').value.trim().replace(/\s+/g,' ');
+  if(n.split(' ').length<2){$('#uErr').textContent='Escribe tu nombre y al menos un apellido.';return}
+  if(!g){$('#uErr').textContent='Escribe tu grupo.';return}
+  $('#uErr').textContent='';startUser(n,g);
+};
+$('#uChange').onclick=()=>{U=null;$('#login').hidden=false;$('#game').hidden=true;$('#report').hidden=true;$('#uName').value='';$('#uGroup').value='';$('#rpText').hidden=true;try{sessionStorage.removeItem('cyu.cur')}catch(e){}};
+let resetArmed=false;
+$('#rpReset').onclick=()=>{
+  if(!resetArmed){resetArmed=true;$('#rpReset').textContent='¿Seguro? Pulsa otra vez';setTimeout(()=>{resetArmed=false;$('#rpReset').textContent='Borrar mis resultados'},4000);return}
+  resetArmed=false;$('#rpReset').textContent='Borrar mis resultados';
+  U.S={ok:0,tot:0,str:0,best:0};U.log=[];U.since=new Date().toISOString();store();renderScore();renderReport();newQ();
+  $('#rpMsg').textContent='Resultados borrados.';
+};
+$('#rpCopy').onclick=async()=>{
+  const t=summaryText();
+  try{await navigator.clipboard.writeText(t);$('#rpMsg').textContent='Resumen copiado. Pégalo en la tarea de tu aula virtual.'}
+  catch(e){const ta=$('#rpText');ta.hidden=false;ta.value=t;ta.focus();ta.select();$('#rpMsg').textContent='Selecciona el texto de abajo y cópialo con Ctrl+C (o Cmd+C).'}
+};
+(async()=>{
+  let dl=null;try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null}catch(e){}
+  if(!dl)return;
+  $('#rpDown').hidden=false;
+  $('#rpDown').onclick=async()=>{
+    if(!U)return;
+    const safe=U.name.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,'_');
+    try{await dl.save({filename:`retos_${safe}_${new Date().toISOString().slice(0,10)}.csv`,data:csv()});$('#rpMsg').textContent='Informe descargado. Súbelo a la tarea de tu aula virtual.'}
+    catch(e){$('#rpMsg').textContent='No se ha descargado el informe. Puedes usar «Copiar resumen».'}
+  };
+})();
+(function resume(){try{const c=JSON.parse(sessionStorage.getItem('cyu.cur')||'null');if(c)startUser(c[0],c[1])}catch(e){}})();
+</script>
+
+</body>
+</html>
